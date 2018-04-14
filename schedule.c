@@ -3,12 +3,15 @@
 #include <string.h>
 
 struct Process {
-    
+    char p_name[32];  
+    int ready_t;
+    int exec_t;
+};
 
 
+void print(struct Process p) {
+    printf("%s %d %d\n", p.p_name, p.ready_t, p.exec_t);
 }
-
-
 
 int main(int argc, char *argv[]) {
     
@@ -26,17 +29,26 @@ int main(int argc, char *argv[]) {
 
     fscanf(stdin, "%s\n", schedule_policy);
     fscanf(stdin, "%d\n", &N);
-    
+   
+    struct Process p_arr[N];
+
     fprintf(stdout, "%s\n", schedule_policy);
     fprintf(stdout, "%d\n", N);
     int i;
     for (i = 0; i < N; ++i) {
         fscanf(stdin, "%s %d %d\n", p_name_buff, &ready_t, &exec_t);
-
-        fprintf(stdout, "%s %d %d\n", p_name_buff, ready_t, exec_t);
+        struct Process tmp_p = {p_name_buff, ready_t, exec_t}; 
+        p_arr[i] = tmp_p;
+        //fprintf(stdout, "%s %d %d\n", p_name_buff, ready_t, exec_t);
     }
+    
+    #ifdef DEBUG
+    for (i = 0; i < N; ++i) {
+        print(p_arr[i]);
+    }
+    #endif   
+    
 
-    printf("Hello world!\n");
     return 0;
 }
 
