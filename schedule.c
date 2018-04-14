@@ -2,6 +2,14 @@
 #include <stdio.h>
 #include <string.h>
 
+struct Process {
+    
+
+
+}
+
+
+
 int main(int argc, char *argv[]) {
     
     /*
