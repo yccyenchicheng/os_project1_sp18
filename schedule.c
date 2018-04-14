@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
-//#define DEBUG 1
+#define DEBUG 1
+#define BUFF_SIZE 32
 
 struct Process {
-    char* p_name;  
+    char p_name[BUFF_SIZE];  
     int ready_t;
     int exec_t;
 };
@@ -24,8 +25,7 @@ int main(int argc, char *argv[]) {
     
     char schedule_policy[10];
     int N;
-    char* p_name;
-    char p_name_buff[32];
+    char p_name_buff[BUFF_SIZE];
     int ready_t;
     int exec_t;
 
@@ -41,43 +41,33 @@ int main(int argc, char *argv[]) {
 
     int i;
     for (i = 0; i < N; ++i) {
-        //char p_name_buff[32];
-        //fscanf(stdin, "%s %d %d\n", p_arr[i].p_name, &(p_arr[i].ready_t),
-        //                            &(p_arr[i].exec_t));
-        
+        char p_name_buff[BUFF_SIZE];
+         
         fscanf(stdin, "%s %d %d\n", p_name_buff, &ready_t,
                                     &exec_t);
-
-        //strcpy(p_name, p_name_buff); 
-        struct Process tmp_p = {p_name, ready_t, exec_t}; 
-        p_arr[i] = tmp_p;
-        strcpy(p_arr[i].p_name, p_name_buff);
+        struct Process tmp_p;
+        memcpy(tmp_p.p_name, p_name_buff, BUFF_SIZE);
+        tmp_p.p_name[BUFF_SIZE - 1] = 0;
+        tmp_p.ready_t = ready_t;
+        tmp_p.exec_t  = exec_t;
+        //strcpy(p_arr[i].p_name, p_name_buff);
+        
+        p_arr[i] = tmp_p; 
         #ifdef DEBUG
-        print(tmp_p);
-        //print(&p_arr[i]);
-        printf("%p\n", &(p_arr[i].p_name));
-        printf("%s\n", (p_arr[i].p_name));
-        printf("%p\n", &(p_name_buff));
+        printf("i = %d, p_name = %s, p_name's address: %p\n", 
+                i, p_arr[i].p_name, (p_arr[i].p_name));
         #endif
     }
 
-    p_arr[1].p_name = "changed";
+    //p_arr[1].p_name = "changed";
    
-    #ifndef DEBUG
-    i = 0;
+    #ifdef DEBUG
     printf("checking value\n");
     for (i = 0; i < N; ++i) {
         printf("%d ", i);
         print(p_arr[i]);
-        printf("%p\n", &(p_arr[i]));
     }
     #endif   
-    
-    #ifdef DEBUG 
-    i = 1;
-    printf("%s %d %d\n", p_arr[i].p_name, p_arr[i].ready_t, p_arr[i].exec_t);    
-    printf("%p\n", &(p_arr[i].p_name));
-    #endif
 
     return 0;
 }
