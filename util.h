@@ -1,4 +1,9 @@
+#include <stdio.h>
+#include <stdlib.h>
 #define BUFF_SIZE 32
+/* Program to implement a queue using two stacks */
+ 
+//extern struct Process;
 
 typedef struct {
     char p_name[BUFF_SIZE];  
@@ -6,10 +11,6 @@ typedef struct {
     int exec_t;
 	int pid;
 } Process;
-
-/* Program to implement a queue using two stacks */
- 
-//extern struct Process;
 
 /* structure of a stack node */
 struct sNode
