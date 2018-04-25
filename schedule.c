@@ -15,6 +15,11 @@ void print(struct Process p) {
     printf("%s %d %d\n", p.p_name, p.ready_t, p.exec_t);
 }
 
+void unit_time() {
+    volatile unsigned long i;
+    for (i = 0; i < 1000000UL; i++);
+}
+
 int main(int argc, char *argv[]) {
     
     /*
@@ -68,6 +73,15 @@ int main(int argc, char *argv[]) {
         print(p_arr[i]);
     }
     #endif   
+
+    /* set process priority */
+    struct sched_param param;
+    
+    /* store process ids of children */
+    int pid[N];
+
+
+
 
     return 0;
 }
