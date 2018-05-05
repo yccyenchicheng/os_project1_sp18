@@ -103,56 +103,33 @@ int main()
             ++current_child_idx; // next child should run
         }
         
+        printf("time counter at parent: %d\n", i);
+        
+        
         if (count_child != 0) {
             sch_p.sched_priority = 4;
             current_child_pid = p[current_child_idx].pid;
             assert(sched_setscheduler(current_child_pid, SCHED_FIFO, &sch_p) != -1);
         }
-    
-
-        printf("time counter at parent: %d\n", i);
     }
 
 
     //close(fd[WRITE_END]);
-
+    
+    int total_time = 0;
     if (p[ptr_current_process].pid == 0) {
         int exec_t = p[ptr_current_process].exec_t;
         pid_t cpid = getpid();
-        for(int j = 0; j < exec_t; ++j) {
+        for(int j = 0; j < exec_t - 1; ++j) {
             unit_time();
             sch_p.sched_priority = 2;
-            printf("child pid: %d, time counter at child: %d\n", getpid(), j);
+            printf("child pid: %d, time has passed: %d\n", cpid, j + 1);
             assert(sched_setscheduler(cpid, SCHED_FIFO, &sch_p) != -1); // return control to parent
+            ++total_time;
         }
+        // last unit of time
+        unit_time();     
+        ++total_time;   
     }
-
-    /*
-    if (p[0].pid == 0) {
-        for(int j = 0; j < p[0].exec_t; ++j) {
-            unit_time();
-            sch_p.sched_priority = 2;
-            printf("child pid: %d, child's j: %d\n", getpid(), j);
-            assert(sched_setscheduler(getpid(), SCHED_FIFO, &sch_p) != -1); // return control to parent
-        }
-    }
-
-    if (p[1].pid == 0) {
-        for(int j = 0; j < p[1].exec_t; ++j) {
-            unit_time();
-            sch_p.sched_priority = 2;
-            printf("child pid: %d, child's j: %d\n", getpid(), j);
-            assert(sched_setscheduler(getpid(), SCHED_FIFO, &sch_p) != -1); // return control to parent
-        }
-    }
-
-    if (p[2].pid == 0) {
-        for(int j = 0; j < p[2].exec_t; ++j) {
-            unit_time();
-            sch_p.sched_priority = 2;
-            printf("child pid: %d, child's j: %d\n", getpid(), j);
-            assert(sched_setscheduler(getpid(), SCHED_FIFO, &sch_p) != -1); // return control to parent
-        }
-    }*/
-
+    printf("child %d stops!, time passed: %d\n", getpid(), total_time);
 }
