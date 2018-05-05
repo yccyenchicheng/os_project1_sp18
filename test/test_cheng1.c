@@ -32,12 +32,16 @@ int main()
    char w_msg[BUFFER_SIZE] = "hello, world";
    char r_msg[BUFFER_SIZE];
 
+   int count = 0;
+
    //for (int i = 0; i < 3; ++i)
    //   printf("%s, %d, %d\n", p[i].p_name, p[i].ready_t, p[i].exec_t);
-   
-   for(int i = 0; i < 24; ++i) {
+    int i; 
+   for(i = 0; i < 24; ++i) {
       if(i == 1) {
          p[0].pid = fork();
+         
+         printf("pid: %d, p[0].pid: %d\n", getpid(), p[0].pid);
          if(p[0].pid == 0) {
             close(fd[WRITE_END]);
             for(int j = 0; j < p[0].exec_t; ++j) {
@@ -46,21 +50,46 @@ int main()
                read(fd[READ_END], r_msg, BUFFER_SIZE);
             }
             break;
-      
          }
          else if(p[0].pid > 0) {
+            ++count;
             close(fd[READ_END]);
             sch_p.sched_priority = 1;
-            sched_setscheduler(p[0].pid, SCHED_FIFO, &sch_p);
+            printf("setscheduler = %d\n", sched_setscheduler(getpid(), SCHED_FIFO, &sch_p));
+            sch_p.sched_priority = 99;
+            printf("setscheduler = %d\n", sched_setscheduler(p[0].pid, SCHED_FIFO, &sch_p));
          }
          else {
             fprintf(stderr, "FORK FAILED!...");
          }
       }
 
+<<<<<<< HEAD:test/test_cheng.c
+      if (count != 0) {
+          printf("partent: %d\n", i);
+          write(fd[WRITE_END], w_msg, strlen(w_msg) + 1);
+      }
+   }
+   
+    
+   //close(fd[WRITE_END]);
+   if (p[0].pid == 0) {
+       close(fd[WRITE_END]);
+       printf("child!\n");
+       for(int j = 0; j < p[0].exec_t; ++j) {
+          unit_time();
+          printf("%d, child: %d\n", getpid(), j);
+          read(fd[READ_END], r_msg, BUFFER_SIZE);
+          //ftruncate(fd[READ_END], 0); // clear contents of fd[READ_END]
+       }
+   }
+
+    return 0;
+=======
       close(fd[READ_END]); 
       printf("partent: %d\n", i);
       write(fd[WRITE_END], w_msg, strlen(w_msg) + 1);
        
    } 
+>>>>>>> 26e682763f9a8acf6f132a6748bec22f270cef1c:test/test.c
 }
