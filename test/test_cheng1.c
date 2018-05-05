@@ -43,6 +43,12 @@ int main()
          
          printf("pid: %d, p[0].pid: %d\n", getpid(), p[0].pid);
          if(p[0].pid == 0) {
+            close(fd[WRITE_END]);
+            for(int j = 0; j < p[0].exec_t; ++j) {
+               unit_time();
+               printf("child: %d\n", j);
+               read(fd[READ_END], r_msg, BUFFER_SIZE);
+            }
             break;
          }
          else if(p[0].pid > 0) {
@@ -58,6 +64,7 @@ int main()
          }
       }
 
+<<<<<<< HEAD:test/test_cheng.c
       if (count != 0) {
           printf("partent: %d\n", i);
           write(fd[WRITE_END], w_msg, strlen(w_msg) + 1);
@@ -78,4 +85,11 @@ int main()
    }
 
     return 0;
+=======
+      close(fd[READ_END]); 
+      printf("partent: %d\n", i);
+      write(fd[WRITE_END], w_msg, strlen(w_msg) + 1);
+       
+   } 
+>>>>>>> 26e682763f9a8acf6f132a6748bec22f270cef1c:test/test.c
 }
