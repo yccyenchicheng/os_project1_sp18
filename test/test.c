@@ -39,6 +39,12 @@ int main()
       if(i == 1) {
          p[0].pid = fork();
          if(p[0].pid == 0) {
+            close(fd[WRITE_END]);
+            for(int j = 0; j < p[0].exec_t; ++j) {
+               unit_time();
+               printf("child: %d\n", j);
+               read(fd[READ_END], r_msg, BUFFER_SIZE);
+            }
             break;
       
          }
@@ -56,12 +62,5 @@ int main()
       printf("partent: %d\n", i);
       write(fd[WRITE_END], w_msg, strlen(w_msg) + 1);
        
-   }
-
-   close(fd[WRITE_END]);
-   for(int j = 0; j < p[0].exec_t; ++j) {
-      unit_time();
-      printf("child: %d\n", j);
-      read(fd[READ_END], r_msg, BUFFER_SIZE);
-   }
+   } 
 }
