@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+
 #define BUFF_SIZE 32
 /* Program to implement a queue using two stacks */
  
@@ -9,7 +12,7 @@ typedef struct {
     char p_name[BUFF_SIZE];  
     int ready_t;
     int exec_t;
-	int pid;
+	pid_t pid;
 } Process;
 
 /* structure of a stack node */

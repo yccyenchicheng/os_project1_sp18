@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+
 #include "util.h"
 
 #define DEBUG 1
@@ -18,6 +21,37 @@ void unit_time() {
     volatile unsigned long i;
     for (i = 0; i < 1000000UL; i++);
 }
+
+/*
+void idea() {
+
+    int t;
+    int total_time, N;
+    total_time = 30; // total time for all processes to complete
+    N = 10; // assume 10 processes
+
+    // pid_t process_id[N];
+    // int next_pid;
+    // next_pid = 0;
+    // ready_q[N];
+    
+    for (t = 0; t < total_time; ++t) {
+        if (t == ready_q.front().ready_t) {
+            process_id[next_pid] = fork();
+            
+            // sched_setscheduler();
+            //
+            // write a function to specify how many unit of time
+            // the child process should run
+
+            next_pid = next_pid + 1;
+        }
+        
+
+
+    }
+
+}*/
 
 int main(int argc, char *argv[]) {
     
@@ -81,7 +115,7 @@ int main(int argc, char *argv[]) {
     struct sched_param param;
     
     /* store process ids of children */
-    int pid[N];
+    pid_t pid[N];
 
 
 
