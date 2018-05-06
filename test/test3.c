@@ -39,6 +39,8 @@ int main()
    wbegin = &p[0];
    wend   = (&p[N]);
 
+
+
    struct sched_param sch_p;
        
    sch_p.sched_priority = 3;   
@@ -85,10 +87,11 @@ int main()
       } 
 
       // scheduler schedules processes from rbegin to rend
-    
+      // TODO insert heap here    
 
 
       if((r == 0) && (rbegin != rend)) {
+         // TODO extract min
          assert(sched_setscheduler(rbegin->pid, SCHED_FIFO, &sch_p) != -1);
          ++r;
       } 
@@ -97,6 +100,7 @@ int main()
             ++rbegin; 
             --r; 
             if(rbegin != rend) {
+               // TODO extract min
                assert(sched_setscheduler(rbegin->pid, SCHED_FIFO, &sch_p) != -1);
                ++r;
             }
