@@ -14,9 +14,9 @@
 #define WRITE_END 1
 #define BUFFER_SIZE 25
 #define TIME_QUANTUM 500
-#define PRINT_INTERVAL 100
+#define PRINT_INTERVAL 250
 
-//#define DEBUG 1
+#define DEBUG 1
 
 int is_terminated = 0;
 pid_t exit_pid;
@@ -73,11 +73,6 @@ int main()
     
     //signal(SIGCHLD, sighandler);
 
-    int remain_burst[3];
-    
-    for (int i = 0; i < 3; ++i)
-        remain_burst[i] = p[i].exec_t;
-
     struct sched_param sch_p;
 
     pid_t scheduler_pid = getpid();
@@ -110,7 +105,7 @@ int main()
     //for (int i = 0; i < total_schedule_time; ++i) 
     while (total_child > 0) //
     {
-        for (int j = 0; j < 3; ++j) // iterate through process to see
+        for (int j = 0; j < total_child; ++j) // iterate through process to see
         {
             if (time_counter == p[j].ready_t)
             {
@@ -158,7 +153,7 @@ int main()
         unit_time(); // time i has passed
         
         if (is_terminated) {
-            printf("pid: %d terminated.\n", exit_pid);
+            printf("pid: %d terminated at time: %d\n", exit_pid, time_counter + 1);
             is_terminated = 0;
             //sch_p.sched_priority = 2; // a running child's prority = 2
             //sched_setscheduler(p[next_run].pid, SCHED_FIFO, &sch_p);
