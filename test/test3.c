@@ -21,20 +21,23 @@ void unit_time() {
 int main()
 {
    //initialize processes
-   Process p[3];
-   Process p1 = {"P1", 0, 6};
-   Process p2 = {"P2", 0, 3};
-   Process p3 = {"P3", 7, 3};
+   int N = 4;
+   Process p[N];
+   Process p1 = {"P1", 0, 7000};
+   Process p2 = {"P2", 0, 6000};
+   Process p3 = {"P3", 100, 1000};
+   Process p4 = {"P4", 200, 4000};
 
    p[0] = p1;
    p[1] = p2;
    p[2] = p3;
+   p[3] = p4;
 
    Process *rbegin, *rend, *wbegin, *wend;
    rbegin = &p[0];
    rend   = &p[0];
    wbegin = &p[0];
-   wend   = (&p[2]+1);
+   wend   = (&p[N]);
 
    struct sched_param sch_p;
        
@@ -47,10 +50,14 @@ int main()
    int t, r, status;   t = 0;   r = 0;
    pid_t pid;   pid = getpid();
    while((rbegin != rend) || (wbegin != wend)) {
+      #ifdef DEBUG
       printf("t = %d: ", t);   fflush(stdout);
+      #endif
       if(wbegin != wend) {
          while(wbegin->ready_t == t) {
+            #ifdef DEBUG
             printf("%s ready... ", wbegin->p_name);   fflush(stdout); 
+            #endif
             pid = fork();   wbegin->pid = pid;
             if(pid < 0) {
                perror("fork() failed...\n");
@@ -60,11 +67,14 @@ int main()
                sch_p.sched_priority = 2;
                for(int i = 0; i < wbegin->exec_t-1; ++i) {
                   unit_time();
+                  #ifdef DEBUG
                   printf("\n   %s run... \n", wbegin->p_name);   fflush(stdout);
+                  #endif
                   assert(sched_setscheduler(cpid, SCHED_FIFO, &sch_p) != -1);
                }       
                unit_time();  
-               printf("\n   %s run... \n", wbegin->p_name);   fflush(stdout);
+               
+               printf("%s %d\n", wbegin->p_name, getpid());   fflush(stdout);
                exit(0);
             }
             else {
@@ -75,6 +85,8 @@ int main()
       } 
 
       // scheduler schedules processes from rbegin to rend
+    
+
 
       if((r == 0) && (rbegin != rend)) {
          assert(sched_setscheduler(rbegin->pid, SCHED_FIFO, &sch_p) != -1);
@@ -90,7 +102,9 @@ int main()
             }
             else {
                unit_time();
+               #ifdef DEBUG
                printf("\n   S idle...\n");   fflush(stdout);
+               #endif
             }
          }
          else {
@@ -99,9 +113,13 @@ int main()
       }      
       else {
          unit_time();
+         #ifdef DEBUG
          printf("\n   S idle...\n");   fflush(stdout);
+         #endif
       }       
+      #ifdef DEBUG
       printf("\n");
+      #endif
       ++t;
    } 
 }
