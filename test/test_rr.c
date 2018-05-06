@@ -214,7 +214,6 @@ int main()
         ++time_counter; 
     }
 
-
     int total_time = 0;
     if (p[ptr_current_process].pid == 0)
     { 
