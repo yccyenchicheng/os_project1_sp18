@@ -1,0 +1,13 @@
+add system call:
+
+struct timespec64:  defined at "include/linux/ktime.h"
+getnstimeofday64:  defined at "include/linux/timekeeping.h"
+
+// file: ~/linux-4.15.15/kernel/print_ns_time.c
+syscall 334
+void sys_print_ns_time(char* tag, pid_t pid, struct timespec64* ts_start, struct timespec* ts_end)
+
+// file: ~/linux-4.15.15/kernel/get_ns_time.c
+syscall 335
+void sys_get_ns_time(struct timespec64 *ts)
+
