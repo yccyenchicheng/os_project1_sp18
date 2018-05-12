@@ -57,7 +57,7 @@ void sighandler(int signum)
 void rr(Process *p_arr, int N) {
 
     total_child = N;
-    char *tag = "[Project 1]";
+    char *tag = "[Project1]";
     
     struct timespec ts_start;
     struct timespec ts_end;
