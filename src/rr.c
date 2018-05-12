@@ -57,9 +57,10 @@ void sighandler(int signum)
 void rr(Process *p_arr, int N) {
 
     total_child = N;
-    char *tag = "[Project 1]"
+    char *tag = "[Project 1]";
+    
     struct timespec ts_start;
-    struct timespec ts_start;
+    struct timespec ts_end;
     
     /* set up the sigaction */
     struct sigaction sa;
@@ -97,6 +98,8 @@ void rr(Process *p_arr, int N) {
             if (time_counter == p_arr[j].ready_t)
             {
                 ptr_current_process = j; // For child to remember who they are in the p[] array
+
+                syscall(335, &ts_start); // for printk
                 p_arr[j].pid = fork();
                 ++count_child;
 
@@ -221,11 +224,14 @@ void rr(Process *p_arr, int N) {
         }
         // last unit of time
         unit_time();     
+        syscall(335, &ts_end); // for printk
         ++total_time;   
         printf("child %d stops!, time passed: %d\n", getpid(), total_time);
         
         // should print p_name, pid when it finishs the execution
         printf("%s %d\n", p_arr[ptr_current_process].p_name, cpid);
+        printf("%s %d %lu.%09lu %lu.%09lu\n", tag, cpid, ts_start.tv_sec, ts_start.tv_nsec, ts_end.tv_sec, ts_end.tv_nsec); // just to check if this is correct
+        syscall(334, tag, cpid, &ts_start, &ts_end); // for dmesg
         _exit(0);
 
     }
