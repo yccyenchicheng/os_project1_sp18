@@ -23,13 +23,6 @@ void unit_time() {
     for (i = 0; i < 1000000UL; i++);
 }
 
-typedef enum {
-   FIFO,
-   RR,
-   SJF,
-   PSJF
-} policy;
-
 int main(int argc, char *argv[]) {
     
     /*
