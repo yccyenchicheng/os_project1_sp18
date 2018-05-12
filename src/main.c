@@ -8,11 +8,19 @@
 #include "util.h"
 #include "scheduler.h"
 
-#define DEBUG 1
+//#define DEBUG 1
 
 #ifndef BUFF_SIZE
 #define BUFF_SIZE 32
 #endif
+
+/* global variable used in rr.c */
+//int is_terminated = 0;
+//int total_child = 0;
+//pid_t exit_pid;
+
+
+
 
 void print(Process p) {
     printf("%s %d %d\n", p.p_name, p.ready_t, p.exec_t);
