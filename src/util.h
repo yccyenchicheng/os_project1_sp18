@@ -10,8 +10,9 @@
 #include <signal.h>
 #include <wait.h>
 #include <assert.h>
+
 #define BUFF_SIZE 32
-#define PRINT_INTERVAL 250
+#define PRINT_INTERVAL 100
 /* Program to implement a queue using two stacks */
 //extern struct Process;
 typedef struct {
@@ -23,7 +24,9 @@ typedef struct {
 void print(Process p);
 void unit_time();
 int str_equal(char* c1,char* c2);
-void child_execution(struct sched_param sch_p,Process currentP);
+
+void child_execution(struct sched_param sch_p, Process current_p, struct timespec ts_start, struct timespec ts_end);
+
 void swap(Process* p1,Process* p2);
 int largerP(Process p1,Process p2);
 void ToHeap(Process* p,int N);
