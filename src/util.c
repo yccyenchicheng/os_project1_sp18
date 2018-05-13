@@ -7,10 +7,24 @@
 #include <signal.h>
 #include <wait.h>
 #include <assert.h>
+
+/* for system call */
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
+#include <time.h>
+#include <sys/syscall.h>
+
 #include "util.h"
+
 #define BUFF_SIZE 32
-#define PRINT_INTERVAL 250
-#define DEBUG 1
+//#define DEBUG 1
+
+#ifndef PRINT_INTERVAL
+#define PRINT_INTERVAL 100
+#endif
+
 /* Program to implement a queue using two stacks */
 //extern struct Process;
 void print(Process p) {
@@ -40,25 +54,44 @@ int str_equal(char* c1,char* c2){
 
 
 
-void child_execution(struct sched_param sch_p,Process currentP){
+void child_execution(struct sched_param sch_p, Process current_p, struct timespec ts_start, struct timespec ts_end){
+    char *tag = "[Project1]";
     int total_time = 0;
-    int exec_t = currentP.exec_t;//p[ptr_current_process].exec_t;
+    int exec_t = current_p.exec_t;
     pid_t cpid = getpid();
-    for(int j = 0; j < exec_t - 1; ++j){
+    
+    for(int j = 0; j < exec_t - 1; ++j)
+    {
         unit_time();
         sch_p.sched_priority = 2;
+        
         #ifdef DEBUG
-        if ( (j % PRINT_INTERVAL) == 0){
+        if ( (j % PRINT_INTERVAL) == 0)
+        {
             printf("child pid: %d, child's time counter: %d\n", cpid, j);
         }
         #endif
+
         assert(sched_setscheduler(cpid, SCHED_FIFO, &sch_p) != -1); // return control to parent
         ++total_time;
     }
-    // last unit of time
+    /* last unit of time */
     unit_time();     
-    ++total_time;   
-    printf("child %s with pid:%d stops!, time passed: %d\n",currentP.p_name,cpid, total_time);
+    syscall(335, &ts_end); // for printk
+    ++total_time;
+    #ifdef DEBUG
+    printf("child %d stops!, time passed: %d\n", getpid(), total_time);
+    printf("%s, pid: %d is about to exit!\n", current_p.p_name, getpid());
+    #endif
+
+    /* should print p_name, pid when it finishs the execution */
+    printf("%s %d\n", current_p.p_name, cpid);
+    /* for dmesg */
+    syscall(334, tag, cpid, &ts_start, &ts_end); // for dmesg
+    
+    #ifdef DEBUG
+    printf("%s %d %lu.%09lu %lu.%09lu\n", tag, cpid, ts_start.tv_sec, ts_start.tv_nsec, ts_end.tv_sec, ts_end.tv_nsec); // just to check if this is correct
+    #endif
     _exit(0);
 }
 
