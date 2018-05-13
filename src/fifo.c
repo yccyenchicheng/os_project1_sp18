@@ -65,6 +65,8 @@ void fifo(Process* p_arr, int N) {
                ++wbegin;
                ++rend;
             } 
+            if(wbegin == wend)
+               break;
          }
       } 
 
