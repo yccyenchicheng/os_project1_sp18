@@ -51,7 +51,6 @@ int main(int argc, char *argv[]) {
     fscanf(stdin, "%s\n", schedule_policy);
     fscanf(stdin, "%d\n", &N);
 
-    printf("Buff_size = %d\n", BUFF_SIZE);
     Process p_arr[N];
 
     #ifdef DEBUG
@@ -78,6 +77,14 @@ int main(int argc, char *argv[]) {
                 i, p_arr[i].p_name, (p_arr[i].p_name));
         #endif
     }
+    
+    #ifdef DEBUG
+    printf("checking value\n");
+    for (i = 0; i < N; ++i) {
+        printf("%d ", i);
+        print(p_arr[i]);
+    }
+    #endif   
  
    if(strcmp(schedule_policy, "FIFO") == 0) {
       fifo(p_arr, N);      
@@ -94,19 +101,6 @@ int main(int argc, char *argv[]) {
 
 
    
-    #ifdef DEBUG
-    printf("checking value\n");
-    for (i = 0; i < N; ++i) {
-        printf("%d ", i);
-        print(p_arr[i]);
-    }
-    #endif   
-
-    /* set process priority */
-    struct sched_param param;
-    
-    /* store process ids of children */
-    pid_t pid[N];
  
     return 0;
 }
