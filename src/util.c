@@ -26,7 +26,7 @@
 #endif
 
 /* Program to implement a queue using two stacks */
-//extern struct Process;
+//extern struct Process
 void print(Process p) {
     printf("%s %d %d\n", p.p_name, p.ready_t, p.exec_t);
 }
@@ -81,11 +81,12 @@ void child_execution(struct sched_param sch_p, Process current_p, struct timespe
     ++total_time;
     #ifdef DEBUG
     printf("child %d stops!, time passed: %d\n", getpid(), total_time);
-    printf("%s, pid: %d is about to exit!\n", current_p.p_name, getpid());
     #endif
 
+    printf("%s, pid: %d is about to exit!\n", current_p.p_name, getpid());
+    
     /* should print p_name, pid when it finishs the execution */
-    printf("%s %d\n", current_p.p_name, cpid);
+    //printf("%s %d\n", current_p.p_name, cpid);
     /* for dmesg */
     syscall(334, tag, cpid, &ts_start, &ts_end); // for dmesg
     
@@ -99,23 +100,19 @@ void ToHeap(Process* p,int N){
     if(N==1){
       
         printf("Build heap:\n");
-        print(p[0]);
+        printHeap(p,N);
         return;
     }
     #ifdef DEBUG
     printf("Before heapify:\n");
-    for(int i=0;i<N;i++){
-        print(p[i]);
-    }
+    printHeap(p,N);
     #endif
     for(int i=(N>>1)-1;i>=0;i--){
         MaxHeapify(p,N,i);
     }
     #ifdef DEBUG
     printf("After heapify:\n");
-    for(int i=0;i<N;i++){
-        print(p[i]);
-    }
+    printHeap(p,N);
     #endif
 }
 void MaxHeapify(Process* p,int N,int index){
@@ -187,4 +184,9 @@ void swap(Process* p1,Process* p2){
     *tmp = *p1;
     *p1 = *p2;
     *p2 = *tmp;
+}
+void printHeap(Process* p,int N){
+    for(int i=0;i<N;i++){
+        print(p[i]);
+    }
 }

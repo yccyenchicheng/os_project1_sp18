@@ -11,4 +11,7 @@ void sjf(Process*, int);
 
 void psjf(Process*, int);
 
+
+
+
 #endif

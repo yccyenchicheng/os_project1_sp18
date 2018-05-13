@@ -33,7 +33,7 @@ void ToHeap(Process* p,int N);
 void MaxHeapify(Process* p,int N,int index);
 int Partition(Process* p,int N);
 void QsortReady(Process* p,int N);
-
+void printHeap(Process* p,int N);
 
 
 // /* structure of a stack node */
