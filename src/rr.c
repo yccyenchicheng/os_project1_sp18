@@ -200,12 +200,12 @@ void rr(Process *p_arr, int N) {
         if (count_child == 0) // time i should pass 1 unit if there is no child now
             unit_time();
         
-        //#ifdef DEBUG
+        #ifdef DEBUG
         if (time_counter % PRINT_INTERVAL == 0)
         {
             printf("time counter at parent: %d\n", time_counter);
         }
-        //#endif
+        #endif
 
         ++time_counter; 
     }
