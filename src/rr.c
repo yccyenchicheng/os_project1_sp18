@@ -24,12 +24,8 @@
 #endif 
 
 #ifndef PRINT_INTERVAL
-#define PRINT_INTERVAL 250
+#define PRINT_INTERVAL 100
 #endif
-
-//#ifndef DEBUG
-//#define DEBUG 1
-//#endif
 
 /* should define these three in main.c */
 int is_terminated = 0;
@@ -48,9 +44,9 @@ void sighandler(int signum)
         is_terminated = 1;
         exit_pid = wait(NULL);
         
-        #ifdef DEBUG
-        printf("Child terminated. pid = %d, child left = %d, terminated = %d\n", exit_pid, total_child - 1, is_terminated);
-        #endif
+        //#ifdef DEBUG
+        printf("Child terminated. pid = %d, child left = %d, terminated = %d\n\n", exit_pid, total_child - 1, is_terminated);
+        //#endif
     }
 }
 
@@ -75,7 +71,9 @@ void rr(Process *p_arr, int N) {
     struct sched_param sch_p;
 
     pid_t scheduler_pid = getpid();
+    #ifdef DEBUG
     printf("scheduler's pid = %d\n", scheduler_pid);
+    #endif
     sch_p.sched_priority = 3;
    
     /* this sets the scheduler's priority = 3 */
@@ -93,54 +91,59 @@ void rr(Process *p_arr, int N) {
     //for (int i = 0; i < total_schedule_time; ++i) 
     while (total_child > 0) //
     {
-        for (int j = 0; j < total_child; ++j) // iterate through process to see
+        for (int i = 0; i < total_child; ++i) // iterate through process to see
         {
-            if (time_counter == p_arr[j].ready_t)
+            if (time_counter == p_arr[i].ready_t)
             {
-                ptr_current_process = j; // For child to remember who they are in the p[] array
+                ptr_current_process = i; // For child to remember who they are in the p[] array
 
                 syscall(335, &ts_start); // for printk
-                p_arr[j].pid = fork();
+                p_arr[i].pid = fork();
                 ++count_child;
 
-                if (p_arr[j].pid == 0) // child
+                if (p_arr[i].pid == 0) // child
                 {
                     break;
                 } 
-                else if (p_arr[j].pid > 0) { // scheduler
-                    printf("child %d created at %d. pid = %d\n", j, time_counter, p_arr[j].pid);
+                else if (p_arr[i].pid > 0) { // scheduler
+                    //#ifdef DEBUG
+                    printf("child %d created at %d. pid = %d\n", i, time_counter, p_arr[i].pid);
+                    //#endif
                 }
 
                 if (count_child == 1) // first child should run
                 {
-                    current_child_pid = p_arr[j].pid;
-                    current_child_idx = j;
+                    current_child_pid = p_arr[i].pid;
+                    current_child_idx = i;
                     RR_start = time_counter;
                 }
             }
         }
         
-        if (count_child != 0 && p_arr[ptr_current_process].pid == 0) { // child
+        //if (count_child != 0 && p_arr[ptr_current_process].pid == 0) { // child
+        if (count_child != 0 && p_arr[ptr_current_process].pid == 0 && getpid() != scheduler_pid) { // child
+            printf("\n\npid = %d, ptr_current_process = %d, p_arr[ptr_current_process].pid = %d\n\n\n", getpid(), ptr_current_process, p_arr[ptr_current_process].pid);
             break;
         }
         
-      
-        if ( count_child > 1 && (time_counter - RR_start) % 500 == 0 && (time_counter != RR_start)) // should change round
+        // should also check if someone is terminated or not 
+        if (count_child > 1 && (time_counter - RR_start) % 500 == 0 && (time_counter != RR_start)) // should change round
         {
-            //current_child_idx = (current_child_idx + 1) % total_child;
-            current_child_idx = (current_child_idx + 1) % count_child;
-            #ifdef DEBUG
-            printf("Current time: %d, child change to: %d. pid = %d\n", time_counter, current_child_idx, p_arr[current_child_idx].pid); 
-            #endif
+            if ( !(is_terminated && p_arr[current_child_idx].pid == exit_pid) ) {
+                current_child_idx = (current_child_idx + 1) % count_child;
+
+                //#ifdef DEBUG
+                printf("Current time: %d, child change to: %d. pid = %d\n", time_counter, current_child_idx, p_arr[current_child_idx].pid); 
+                //#endif
+            }
         }
          
         
         if (is_terminated) {
+            #ifdef DEBUG
             printf("pid: %d terminated at time: %d\n", exit_pid, time_counter);
+            #endif
             is_terminated = 0;
-            //sch_p.sched_priority = 2; // a running child's prority = 2
-            //sched_setscheduler(p[next_run].pid, SCHED_FIFO, &sch_p);
-            //++next_run;
             int idx_removed = -1;
             Process tmp;
             
@@ -163,14 +166,16 @@ void rr(Process *p_arr, int N) {
                         //#ifdef DEBUG
                         printf("current childs: \n");
                         for (int k = 0; k < total_child - 1; ++k) {
-                            printf("%s, %d\n", p_arr[k].p_name, p_arr[k].pid);
+                            printf("%s, %d; ", p_arr[k].p_name, p_arr[k].pid);
                         }
+                        printf("\n");
                         //#endif
                         
                         break;
                     } else if (total_child == 2) { // num == total_child - 1
                         //p_arr[0] = p_arr[num];
                         current_child_idx = 0; // should set current_child_idx = 0;
+                        printf("childs!\n");
                     }
                 }
             }
@@ -191,33 +196,39 @@ void rr(Process *p_arr, int N) {
         if (count_child == 0) // time i should pass 1 unit if there is no child now
             unit_time();
         
-        #ifdef DEBUG
+        //#ifdef DEBUG
         if (time_counter % PRINT_INTERVAL == 0)
         {
             printf("time counter at parent: %d\n", time_counter);
         }
-        #endif
+        //#endif
 
         ++time_counter; 
     }
 
     int total_time = 0;
-    if (p_arr[ptr_current_process].pid == 0)
+    pid_t cpid;
+    //if (p_arr[ptr_current_process].pid == 0 && getpid() != scheduler_pid)
+    if ( (cpid = getpid()) != scheduler_pid)
     {
         int exec_t = p_arr[ptr_current_process].exec_t;
-        pid_t cpid = getpid();
+        //pid_t cpid = getpid();
+        if (cpid == scheduler_pid)
+            printf("why you are here? ptr_current_process = %d, ready_t = %d, exec_t = %d\n", ptr_current_process, 
+                                                                                              p_arr[ptr_current_process].ready_t,
+                                                                                              p_arr[ptr_current_process].exec_t);
         
         for(int j = 0; j < exec_t - 1; ++j)
         {
             unit_time();
             sch_p.sched_priority = 2;
             
-            #ifdef DEBUG
+            //#ifdef DEBUG
             if ( (j % PRINT_INTERVAL) == 0)
             {
                 printf("child pid: %d, child's time counter: %d\n", cpid, j);
             }
-            #endif
+            //#endif
 
             assert(sched_setscheduler(cpid, SCHED_FIFO, &sch_p) != -1); // return control to parent
             ++total_time;
@@ -225,20 +236,28 @@ void rr(Process *p_arr, int N) {
         // last unit of time
         unit_time();     
         syscall(335, &ts_end); // for printk
-        ++total_time;   
+        ++total_time;
+        //#ifdef DEBUG
         printf("child %d stops!, time passed: %d\n", getpid(), total_time);
-        
-        // should print p_name, pid when it finishs the execution
+        //#endif
+
+        /* should print p_name, pid when it finishs the execution */
         printf("%s %d\n", p_arr[ptr_current_process].p_name, cpid);
-        printf("%s %d %lu.%09lu %lu.%09lu\n", tag, cpid, ts_start.tv_sec, ts_start.tv_nsec, ts_end.tv_sec, ts_end.tv_nsec); // just to check if this is correct
+        /* for dmesg */
         syscall(334, tag, cpid, &ts_start, &ts_end); // for dmesg
+        
+        #ifdef DEBUG
+        printf("%s %d %lu.%09lu %lu.%09lu\n", tag, cpid, ts_start.tv_sec, ts_start.tv_nsec, ts_end.tv_sec, ts_end.tv_nsec); // just to check if this is correct
+        #endif
+        printf("%s, pid: %d is about to exit!\n", p_arr[ptr_current_process].p_name, getpid());
         _exit(0);
 
     }
     
+    #ifdef DEBUG
     if (total_child == 0)
         printf("finished RR. total time: %d\n", time_counter);
-
+    #endif
 }
 
 
