@@ -21,7 +21,7 @@
 
 
 
-
+/*
 void print(Process p) {
     printf("%s %d %d\n", p.p_name, p.ready_t, p.exec_t);
 }
@@ -29,7 +29,7 @@ void print(Process p) {
 void unit_time() {
     volatile unsigned long i;
     for (i = 0; i < 1000000UL; i++);
-}
+}*/
 
 int main(int argc, char *argv[]) {
     

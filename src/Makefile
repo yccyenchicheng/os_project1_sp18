@@ -1,4 +1,4 @@
-main: main.o fifo.o rr.o sjf.o psjf.o
+main: main.o fifo.o rr.o sjf.o psjf.o util.o
 	gcc -o $@ $^
 
 main.o: main.c
@@ -15,6 +15,9 @@ sjf.o: sjf.c
 
 psjf.o: psjf.c
 	gcc -c psjf.c
+
+util.o: util.c
+	gcc -c util.c
 
 clean:
 	rm *.o
