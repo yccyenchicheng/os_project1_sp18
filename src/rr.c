@@ -152,7 +152,6 @@ void rr(Process *p_arr, int N) {
                     {
                         for (int k = num; k < total_child; ++k) 
                         {
-                            // TODO should we keep exit_child's info?
                             p_arr[k] = p_arr[k + 1];
                         }
                         current_child_idx = num; // should set current_child_idx = num, so the next child can continue to run 
@@ -204,8 +203,6 @@ void rr(Process *p_arr, int N) {
         ++time_counter; 
     }
 
-
-    
     int total_time = 0;
     pid_t cpid;
     if ( (cpid = getpid()) != scheduler_pid )
