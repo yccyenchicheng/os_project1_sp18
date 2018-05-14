@@ -145,7 +145,7 @@ int largerP(Process p1,Process p2){ //return true if priority p1 > p2 (SJF)
     }
 }
 int earlierP(Process p1,Process p2){ //return true if ready_t p1 < p2 
-    if(p1.ready_t<p2.ready_t||(p1.ready_t==p2.ready_t&&p1.exec_t<p2.exec_t)){
+    if(p1.ready_t < p2.ready_t || (p1.ready_t == p2.ready_t && ( strcmp(p1.p_name, p2.p_name) < 0 ))){
         return 1;
     }else{
         return 0;
