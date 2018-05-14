@@ -35,7 +35,7 @@ static pid_t exit_pid;
 static int total_child = 0;
 void psjf_sighandler(int signum){
     if (signum == SIGCHLD){
-        //is_terminated = 1;
+        is_terminated = 1;
         exit_pid = wait(NULL);
         //#ifdef DEBUG
         printf("Child terminated. pid = %d, child left = %d, terminated = %d\n", exit_pid, total_child-1, is_terminated);
@@ -74,16 +74,18 @@ void psjf(Process* p,int N){
     }
     #endif
     QsortReady(p,N);//sort ready_t from small to large
-    #ifdef DEBUG
+    //#ifdef DEBUG
     printf("After sort\n");
     for(int i=0;i<N;i++){
     	printf("process info: ready_t=%d,exec_t=%d\n",p[i].ready_t,p[i].exec_t);
     }
-	#endif
+//	#endif
     //this part is to sort for finding ready process
     
     total_child = N;
     Process currentP;//Now executing process
+    currentP.pid = -1;
+    currentP.ready_t = -1;
     currentP.exec_t = -1; // smaller then zero when before the "currentP = first process" so that won't fork child
     Process* priority_heap = (Process*)malloc(N* sizeof(Process));
     int priority_heap_size = 0;
@@ -113,7 +115,7 @@ void psjf(Process* p,int N){
                 	break;
             	} else if (currentP.pid > 0) { // scheduler
                 	printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
-                    exec_time_counter = 0; //prevent to calculate the idle before first process start 
+                    //exec_time_counter = 0; //prevent to calculate the idle before first process start 
             	}else{
 	                printf("fork failed\n");
 	            }
@@ -133,10 +135,10 @@ void psjf(Process* p,int N){
 
     	//if a child finish(exec_time_counter = exec_t), extract first process from priority_heap to currentP and run 
     	//reset exec_time_counter=0
-    	if(exec_time_counter == currentP.exec_t){//if execution time end, print counter
-            
+    	if(is_terminated){//if execution time end, print counter
+            is_terminated = 0;
             //#ifdef DEBUG
-            printf("time counter at parent: %d,exec_time_counter: %d,currentP.exec_t: %d,total_child: %d\n", time_counter,exec_time_counter,currentP.exec_t,--total_child);
+            printf("time counter at parent: %d,currentP.exec_t: %d,total_child: %d\n", time_counter,currentP.exec_t,--total_child);
             //#endif
             if(priority_heap_size>0){//if no process running or ready, idle
 

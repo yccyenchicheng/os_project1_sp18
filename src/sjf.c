@@ -74,21 +74,23 @@ void sjf(Process* p,int N){
     }
     #endif
     QsortReady(p,N);//sort ready_t from small to large
-    #ifdef DEBUG
+    //#ifdef DEBUG
     printf("After sort\n");
     for(int i=0;i<N;i++){
     	printf("process info: ready_t=%d,exec_t=%d\n",p[i].ready_t,p[i].exec_t);
     }
-	#endif
+//	#endif
     //this part is to sort for finding ready process
 
     total_child = N;
-    Process currentP;//Now executing process
+    Process currentP;//Now executing process 
+    currentP.pid = -1;
+    currentP.ready_t = -1;
     currentP.exec_t = -1; // smaller then zero when before the "currentP = first process" so that won't fork child
     Process* priority_heap = (Process*)malloc(N* sizeof(Process));
     int priority_heap_size = 0;
     int time_counter = 0;
-    int exec_time_counter = 0 ; // to count the current child's exec_t 
+    //int exec_time_counter = 0 ; // to count the current child's exec_t 
     int ready_index = 0; //check if p[ready_index] ready
     while (total_child > 0){ // main parent loop
 
@@ -111,7 +113,7 @@ void sjf(Process* p,int N){
                 	break;
             	} else if (currentP.pid > 0) { // scheduler
                     printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
-                    exec_time_counter = 0; //prevent to calculate the idle before first process start 
+                    //exec_time_counter = 0; //prevent to calculate the idle before first process start 
             	}
                 #ifdef DEBUG
                 printf("<New child>set child pid: %d's priority to 4\n",currentP.pid);
@@ -132,11 +134,11 @@ void sjf(Process* p,int N){
             is_terminated = 0;
             
             //#ifdef DEBUG
-            printf("time counter at parent: %d, exec_time_counter: %d, currentP.exec_t: %d, total_child: %d\n", time_counter,exec_time_counter,currentP.exec_t,--total_child);
+            printf("time counter at parent: %d, currentP.exec_t: %d, total_child: %d\n", time_counter,currentP.exec_t,--total_child);
             //#endif
             if(priority_heap_size>0){//if no process running or ready, idle
 
-                exec_time_counter = 0;
+                //exec_time_counter = 0;
                 currentP = priority_heap[0];
                 syscall(335, &ts_start);
                 currentP.pid = fork();
@@ -170,10 +172,10 @@ void sjf(Process* p,int N){
     	
         //#ifdef DEBUG
         if (time_counter % PRINT_INTERVAL == 0){
-            printf("<PRINT_INTERVAL>time counter at parent: %d, total_child: %d, exec_time_counter: %d\n", time_counter,total_child,exec_time_counter);
+            printf("<PRINT_INTERVAL>time counter at parent: %d, total_child: %d\n", time_counter,total_child);
         }
         //#endif
-    	exec_time_counter++;
+    	//exec_time_counter++;
     	time_counter++;
     }
 
