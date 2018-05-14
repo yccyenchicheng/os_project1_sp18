@@ -86,10 +86,10 @@ int main(int argc, char *argv[]) {
     #endif   
  
    if(strcmp(schedule_policy, "FIFO") == 0) {
-      //fifo(p_arr, N);      
+      fifo(p_arr, N);      
    }
    else if(strcmp(schedule_policy, "RR") == 0) {
-      //rr(p_arr, N);
+      rr(p_arr, N);
    }
    else if(strcmp(schedule_policy, "SJF") == 0) {
       sjf(p_arr, N);

@@ -28,14 +28,14 @@
 #ifndef PRINT_INTERVAL
 #define PRINT_INTERVAL 100
 #endif
-#define DEBUG 1
+//#define DEBUG 1
 
 static int is_terminated = 0;
 static pid_t exit_pid;
 static int total_child = 0;
 void sjf_sighandler(int signum){
     if (signum == SIGCHLD){
-        //is_terminated = 1;
+        is_terminated = 1;
         exit_pid = wait(NULL);
         //#ifdef DEBUG
         printf("Child terminated. pid = %d, child left = %d, terminated = %d\n", exit_pid, total_child-1, is_terminated);
@@ -95,24 +95,22 @@ void sjf(Process* p,int N){
     	//check counter if some other process ready,add to priority_heap, if ready_index=0 fork and run immediately
     	//while check whether p[ready_index] ready
     	while(ready_index<N && p[ready_index].ready_t==time_counter){
-            //#ifdef DEBUG       
+            #ifdef DEBUG       
             printf("time counter at parent: %d\n\tReady process: ", time_counter);
             print(p[ready_index]);
-            //#endif
+            #endif
     		priority_heap[priority_heap_size++] = p[ready_index];	//add this process to priority_heap
     		ToHeap(priority_heap,priority_heap_size);//clean but maybe slow QQ
 
 
     		if(ready_index==0){//only first time will go here,fork and run first process
-    			currentP = priority_heap[--priority_heap_size]; 
-                #ifndef DEBUG
-                syscall(335, &ts_start);
-                #endif
-    			currentP.pid = fork();
-				if (currentP.pid == 0){ // child
+    		    currentP = priority_heap[--priority_heap_size]; 
+                    syscall(335, &ts_start);
+    		    currentP.pid = fork();
+		    if (currentP.pid == 0){ // child
                 	break;
             	} else if (currentP.pid > 0) { // scheduler
-                	printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
+                    printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
                     exec_time_counter = 0; //prevent to calculate the idle before first process start 
             	}
                 #ifdef DEBUG
@@ -130,18 +128,17 @@ void sjf(Process* p,int N){
 
     	//if a child finish(exec_time_counter = exec_t), extract first process from priority_heap to currentP and run 
     	//reset exec_time_counter=0
-    	if(exec_time_counter == currentP.exec_t){//if execution time end, print counter
+    	if(is_terminated){//if execution time end, print counter
+            is_terminated = 0;
             
             //#ifdef DEBUG
-            printf("time counter at parent: %d,exec_time_counter: %d,currentP.exec_t: %d,total_child: %d\n", time_counter,exec_time_counter,currentP.exec_t,--total_child);
+            printf("time counter at parent: %d, exec_time_counter: %d, currentP.exec_t: %d, total_child: %d\n", time_counter,exec_time_counter,currentP.exec_t,--total_child);
             //#endif
             if(priority_heap_size>0){//if no process running or ready, idle
 
                 exec_time_counter = 0;
                 currentP = priority_heap[0];
-                #ifndef DEBUG
                 syscall(335, &ts_start);
-                #endif
                 currentP.pid = fork();
                 if (currentP.pid == 0){ // child
                     break;
@@ -161,7 +158,9 @@ void sjf(Process* p,int N){
     	}else if (p[0].ready_t <= time_counter) { //some child executing
             //printf("total_child = %d, current_child_idx = %d\n", total_child, current_child_idx);
             if (time_counter % PRINT_INTERVAL == 0){
+                #ifdef DEBUG
                 printf("<PRINT_INTERVAL>set child pid: %d's priority to 4\n",currentP.pid);
+                #endif
             }
             sch_p.sched_priority = 4;            
             assert(sched_setscheduler(currentP.pid, SCHED_FIFO, &sch_p) != -1); // let the child run
@@ -171,7 +170,7 @@ void sjf(Process* p,int N){
     	
         //#ifdef DEBUG
         if (time_counter % PRINT_INTERVAL == 0){
-            printf("<PRINT_INTERVAL>time counter at parent: %d,total_child: %d,exec_time_counter:%d\n", time_counter,total_child,exec_time_counter);
+            printf("<PRINT_INTERVAL>time counter at parent: %d, total_child: %d, exec_time_counter: %d\n", time_counter,total_child,exec_time_counter);
         }
         //#endif
     	exec_time_counter++;
