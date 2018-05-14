@@ -105,34 +105,36 @@ void psjf(Process* p,int N){
     		ToHeap(priority_heap,priority_heap_size);//clean but maybe slow QQ
 
 
-    		if(ready_index==0){//only first time will go here,fork and run first process
-    			currentP = priority_heap[--priority_heap_size]; 
-                #ifndef DEBUG
-                syscall(335, &ts_start);
-                #endif
-    			currentP.pid = fork();
-				if (currentP.pid == 0){ // child
-                	break;
-            	} else if (currentP.pid > 0) { // scheduler
-                	printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
-                    //exec_time_counter = 0; //prevent to calculate the idle before first process start 
-            	}else{
-	                printf("fork failed\n");
-	            }
-                #ifdef DEBUG
-                printf("<New child>set child pid: %d's priority to 4\n",currentP.pid);
-                #endif
-            	sch_p.sched_priority = 4;
-	        	assert(sched_setscheduler(currentP.pid, SCHED_FIFO, &sch_p) != -1); // let the child run
-    		}
+    // 		if(ready_index==0){//only first time will go here,fork and run first process
+    // 			currentP = priority_heap[--priority_heap_size]; 
+    //             #ifndef DEBUG
+    //             syscall(335, &ts_start);
+    //             #endif
+    // 			currentP.pid = fork();
+				// if (currentP.pid == 0){ // child
+    //             	break;
+    //         	} else if (currentP.pid > 0) { // scheduler
+    //             	printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
+    //                 //exec_time_counter = 0; //prevent to calculate the idle before first process start 
+    //         	}else{
+	   //              printf("fork failed\n");
+	   //          }
+    //             #ifdef DEBUG
+    //             printf("<New child>set child pid: %d's priority to 4\n",currentP.pid);
+    //             #endif
+    //         	sch_p.sched_priority = 4;
+	   //      	assert(sched_setscheduler(currentP.pid, SCHED_FIFO, &sch_p) != -1); // let the child run
+    // 		}
 
     		ready_index++;
     	}
-        if (currentP.pid == 0) { // for the first child leave the main loop
-            break;
+        // if (currentP.pid == 0) { // for the first child leave the main loop
+        //     break;
+        // }
+
+        if (p[0].ready_t == time_counter){
+            is_terminated = 1;
         }
-
-
     	//if a child finish(exec_time_counter = exec_t), extract first process from priority_heap to currentP and run 
     	//reset exec_time_counter=0
     	if(is_terminated){//if execution time end, print counter
