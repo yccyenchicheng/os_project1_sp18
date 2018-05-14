@@ -65,12 +65,12 @@ void child_execution(struct sched_param sch_p, Process current_p, struct timespe
         unit_time();
         sch_p.sched_priority = 2;
         
-        #ifdef DEBUG
-        if ( (j % PRINT_INTERVAL) == 0)
-        {
-            printf("child pid: %d, child's time counter: %d\n", cpid, j);
-        }
-        #endif
+        //#ifdef DEBUG
+        //if ( (j % PRINT_INTERVAL) == 0)
+        //{
+        printf("child pid: %d, child's time counter: %d\n", cpid, j);
+        //}
+        //#endif
 
         assert(sched_setscheduler(cpid, SCHED_FIFO, &sch_p) != -1); // return control to parent
         ++total_time;
@@ -110,10 +110,10 @@ void ToHeap(Process* p,int N){
     for(int i=(N>>1)-1;i>=0;i--){
         MaxHeapify(p,N,i);
     }
-    #ifdef DEBUG
+    //#ifdef DEBUG
     printf("After heapify:\n");
     printHeap(p,N);
-    #endif
+    //#endif
 }
 void MaxHeapify(Process* p,int N,int index){
     int largest = 0;
