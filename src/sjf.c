@@ -132,12 +132,13 @@ void sjf(Process* p,int N){
     	//reset exec_time_counter=0
         if (p[0].ready_t == time_counter){
             is_terminated = 1;
+            total_child++; //before the first process start, no need to --total_child in line 143, so need to print N there in first time
         }
 
 
     	if(is_terminated){//if execution time end, print counter
-            is_terminated = 0;
             
+            is_terminated = 0;
             //#ifdef DEBUG
             printf("time counter at parent: %d, currentP.exec_t: %d, total_child: %d\n", time_counter,currentP.exec_t,--total_child);
             //#endif

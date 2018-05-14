@@ -134,6 +134,7 @@ void psjf(Process* p,int N){
 
         if (p[0].ready_t == time_counter){
             is_terminated = 1;
+            total_child++; //before the first process start, no need to --total_child in line 144, so need to print N there in first time
         }
     	//if a child finish(exec_time_counter = exec_t), extract first process from priority_heap to currentP and run 
     	//reset exec_time_counter=0
