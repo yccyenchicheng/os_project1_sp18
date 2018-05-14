@@ -11,6 +11,9 @@
 #include <wait.h>
 #include <assert.h>
 
+#define BUFF_SIZE 32
+
+
 /* Program to implement a queue using two stacks */
 //extern struct Process;
 typedef struct {
