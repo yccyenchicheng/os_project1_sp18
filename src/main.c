@@ -85,6 +85,8 @@ int main(int argc, char *argv[]) {
     }
     #endif   
  
+   QsortReady(p_arr, N);
+ 
    if(strcmp(schedule_policy, "FIFO") == 0) {
       fifo(p_arr, N);      
    }
