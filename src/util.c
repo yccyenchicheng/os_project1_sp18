@@ -263,5 +263,45 @@ Process pop(struct sNode** top_ref)
     }
 }
 
+int myPush(myHeap *heap, Process *proc) {
+   if(heap->current_size < heap->max_size) {
+      (heap->container)[heap->current_size] = *proc;
+      ++(heap->current_size);
+      ToHeap(heap->container, heap->current_size);
 
+      return 1;
+   }
+   
+   return 0;
+}
+
+int myPop(myHeap *heap) {
+   if(heap->current_size > 0) {
+      --(heap->current_size);
+      swap(heap->container, ((heap->container) + (heap->current_size)));
+      ToHeap(heap->container, heap->current_size);
+ 
+      return 1;
+   }
+
+   return 0;
+}
+
+int myFront(myHeap *heap, Process *proc) {
+   if(heap->current_size > 0) {
+      *proc = *(heap->container); 
+
+      return 1;
+   }
+
+   return 0;
+}
+
+int myEmpty(myHeap *heap) {
+   if(heap->current_size > 0) {
+      return 0;
+   }
+
+   return 1;
+}
 
