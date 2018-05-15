@@ -163,12 +163,14 @@ void FIFO_handler(Process* p_arr, int N)
 	int time = 0;
 	while(head_r != -1 || head_e != -1){
 		while(head_r != -1 && prior_r[head_r]<=time){
-			printf("p%d is ready at %d\n", head_r, time);
+			//printf("p%d is ready at %d\n", head_r, time);
+			printf("%s is ready at %d\n", p_arr[head_r].name, time);
 			InsertSorted(List_e,&head_e, head_r, prior_r);
 			Delete(List_r, &head_r);
 		}
 		while(head_e!=-1){
-			printf("p%d is terminated at %d\n", head_e, time + prior_e[head_e]-1);
+			//printf("p%d is terminated at %d\n", head_e, time + prior_e[head_e]-1);
+			printf("%s is terminated at %d\n", p_arr[head_e].name, time + prior_e[head_e]-1);
 			time = time + prior_e[head_e];
 			Delete(List_e, &head_e);
 		}
@@ -200,14 +202,16 @@ void RR_handler(Process* p_arr, int N)
 	while(head_r != -1 || head_e != -1)
 	{
 		while(head_r != -1 && prior_r[head_r]<=time){
-			printf("p%d ready at %d\n",head_r,time);
+			//printf("p%d ready at %d\n",head_r,time);
+			printf("%s is ready at %d\n", p_arr[head_r].name, time);
 			InsertBack(List_e, &head_e, head_r);
 			Delete(List_r, &head_r);
 		}
 		if(head_e != -1){
 			if(prior_e[head_e]<=500)
 			{
-				printf("p%d terminated at %d\n", head_e, time + prior_e[head_e]-1);
+				//printf("p%d terminated at %d\n", head_e, time + prior_e[head_e]-1);
+                                printf("%s is terminated at %d\n", p_arr[head_e].name, time + prior_e[head_e]-1);
 				time = time + prior_e[head_e];
 				Delete(List_e, &head_e);
 			}
@@ -216,7 +220,8 @@ void RR_handler(Process* p_arr, int N)
 				prior_e[head_e] = prior_e[head_e] - 500;
 				int temp = head_e;
 				while(head_r != -1 && prior_r[head_r]<=time){
-					printf("p%d is ready at %d\n", head_r, time);
+					//printf("p%d is ready at %d\n", head_r, time);
+                                        printf("%s is ready at %d\n", p_arr[head_r].name, time);
 					InsertBack(List_e, &head_e, head_r);
 					Delete(List_r, &head_r);
 				}
