@@ -18,17 +18,14 @@
 
 #include "util.h"
 
-#define BUFF_SIZE 32
 //#define DEBUG 1
 
-#ifndef PRINT_INTERVAL
-#define PRINT_INTERVAL 100
-#endif
+//#define PRINT_INTERVAL 100
 
 /* Program to implement a queue using two stacks */
 //extern struct Process
 void print(Process p) {
-    printf("%s %d %d\n", p.p_name, p.ready_t, p.exec_t);
+    printf("%s %d %d %d\n", p.p_name,p.pid, p.ready_t, p.exec_t);
 }
 
 void unit_time() {
@@ -41,9 +38,9 @@ int str_equal(char* c1,char* c2){
     while(c1[i]==c2[i]){
 
         if(c1[i]=='\0'){
-            #ifdef DEBUG
+#ifdef DEBUG
             printf("shorter strlen = %d\n",i);
-            #endif
+#endif
             return 1;
         }
         i++;
@@ -52,52 +49,48 @@ int str_equal(char* c1,char* c2){
 
 }
 
-
-
 void child_execution(struct sched_param sch_p, Process current_p, struct timespec ts_start, struct timespec ts_end){
     char *tag = "[Project1]";
     int total_time = 0;
     int exec_t = current_p.exec_t;
     pid_t cpid = getpid();
-    
+
     for(int j = 0; j < exec_t - 1; ++j)
     {
+        printf("child pid: %d, child's time counter: %d\n", cpid, j);
         unit_time();
         sch_p.sched_priority = 2;
-        
-        //#ifdef DEBUG
-        //if ( (j % PRINT_INTERVAL) == 0)
-        //{
-        printf("child pid: %d, child's time counter: %d\n", cpid, j);
-        //}
-        //#endif
 
+
+        printf("### change to parent ###\n");
         assert(sched_setscheduler(cpid, SCHED_FIFO, &sch_p) != -1); // return control to parent
         ++total_time;
     }
     /* last unit of time */
+    printf("child pid: %d, child's time counter: %d\n", cpid, total_time);
     unit_time();     
     syscall(335, &ts_end); // for printk
     ++total_time;
-    #ifdef DEBUG
+#ifdef DEBUG
     printf("child %d stops!, time passed: %d\n", getpid(), total_time);
-    #endif
+#endif
 
-    printf("%s, pid: %d is about to exit!\n", current_p.p_name, getpid());
-    
+    printf("%s, pid: %d is about to exit!. time: %d\n", current_p.p_name, getpid(), total_time);
+
     /* should print p_name, pid when it finishs the execution */
-    //printf("%s %d\n", current_p.p_name, cpid);
+    printf("%s %d\n", current_p.p_name, cpid);
     /* for dmesg */
     syscall(334, tag, cpid, &ts_start, &ts_end); // for dmesg
-    
-    #ifdef DEBUG
+
+#ifdef DEBUG
     printf("%s %d %lu.%09lu %lu.%09lu\n", tag, cpid, ts_start.tv_sec, ts_start.tv_nsec, ts_end.tv_sec, ts_end.tv_nsec); // just to check if this is correct
-    #endif
+#endif
     _exit(0);
 }
 
 void ToHeap(Process* p,int N){
     if(N==1){
+
       
 //        printf("Build heap:\n");
 //        printHeap(p,N);
@@ -107,6 +100,15 @@ void ToHeap(Process* p,int N){
 //    printf("Before heapify:\n");
 //    printHeap(p,N);
     #endif
+
+        printf("Build heap:\n");
+        printHeap(p,N);
+        return;
+    }
+#ifdef DEBUG
+    printf("Before heapify:\n");
+    printHeap(p,N);
+#endif
     for(int i=(N>>1)-1;i>=0;i--){
         MaxHeapify(p,N,i);
     }
@@ -115,6 +117,7 @@ void ToHeap(Process* p,int N){
 //    printHeap(p,N);
     //#endif
 }
+
 void MaxHeapify(Process* p,int N,int index){
     int largest = 0;
     int left = (index<<1) + 1, right = (index<<1) + 2;
@@ -193,3 +196,125 @@ void printHeap(Process* p,int N){
         print(p[i]);
     }
 }
+
+
+/* Function to enqueue an item to queue */
+void enQueue(struct queue *q, Process x)
+{
+    // set up front
+    if (q->stack1 == NULL && q->stack2 == NULL) {
+        q->front = x;
+    }
+    q->end = x;
+    push(&q->stack1, x);
+}
+
+/* Function to dequeue an item from queue */
+Process deQueue(struct queue *q)
+{
+    Process x;
+    /* If both stacks are empty then error */
+    if(q->stack1 == NULL && q->stack2 == NULL)
+    {
+        printf("Q is empty");
+        getchar();
+        exit(0);
+    }
+
+    /* Move elements from stack1 to stack 2 only if
+       stack2 is empty */
+    if(q->stack2 == NULL)
+    {
+        while(q->stack1 != NULL)
+        {
+            x = pop(&q->stack1);
+            push(&q->stack2, x);
+
+        }
+    }
+    
+    x = pop(&q->stack2);
+    if (q->stack2 != NULL) {
+        q->front = q->stack2->data;
+    } else {
+        if (q->stack1 != NULL) {
+            Process tmp;
+            while(q->stack1 != NULL)
+            {
+                tmp = pop(&q->stack1);
+                push(&q->stack2, tmp);
+                
+            }
+            q->front = tmp;
+        }
+
+    }
+    
+
+    /* setup front. */
+    //if(q->stack2 == NULL)
+    //{
+    //    Process tmp;
+    //    if (q->stack1 != NULL) {
+    //        while(q->stack1 != NULL)
+    //        {
+    //            tmp = pop(&q->stack1);
+    //            push(&q->stack2, tmp);
+    //        }
+    //        q->front = (q->stack2->data);
+    //    }
+    //}
+    return x;
+}
+
+/* Function to push an item to stack*/
+void push(struct sNode** top_ref, Process new_data)
+{
+    /* allocate node */
+    struct sNode* new_node =
+        (struct sNode*) malloc(sizeof(struct sNode));
+    if(new_node == NULL)
+    {
+        printf("Stack overflow \n");
+        getchar();
+        exit(0);
+
+    }
+
+    /* put in the data */
+    new_node->data = new_data;
+
+    /* link the old list off the new node */
+    new_node->next = (*top_ref);
+
+    /* move the head to point to the new node */
+    (*top_ref) = new_node;
+}
+
+/* Function to pop an item from stack*/
+Process pop(struct sNode** top_ref)
+{
+    Process res;
+    struct sNode *top;
+
+    /*If stack is empty then error */
+    if(*top_ref == NULL)
+    {
+        printf("Stack overflow \n");
+        getchar();
+        exit(0);
+
+    }
+    else
+    {
+        top = *top_ref;
+        res = top->data;
+        *top_ref = top->next;
+        free(top);
+        return res;
+
+    }
+}
+
+
+
