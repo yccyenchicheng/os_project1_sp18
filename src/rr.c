@@ -45,7 +45,7 @@ void sighandler(int signum)
 }
 
 void rr(Process *p_arr, int N) {
-
+    
     total_child = N;
     char *tag = "[Project1]";
     
@@ -80,6 +80,13 @@ void rr(Process *p_arr, int N) {
                              // which process it need to run
 
     int RR_start = -1;
+ 
+    struct queue *ready_q = (struct queue*) malloc(sizeof(struct queue));
+    
+    ready_q->stack1 = NULL;
+    ready_q->stack2 = NULL;
+
+    //Process ready_q[N];
    
     int time_counter = 0;
     while (total_child > 0) //
@@ -99,6 +106,7 @@ void rr(Process *p_arr, int N) {
 
                 syscall(335, &ts_start); // for printk
                 p_arr[i].pid = fork();
+                enQueue(ready_q, p_arr[i]); // enQueue the forked child at the end of the queue
                 ++count_child;
 
                 if (p_arr[i].pid == 0) // child
@@ -113,7 +121,8 @@ void rr(Process *p_arr, int N) {
 
                 if (count_child == 1) // first child should run
                 {
-                    current_child_pid = p_arr[i].pid;
+                    //current_child_pid = p_arr[i].pid;
+                    current_child_pid = ready_q->front.pid; 
                     current_child_idx = i;
                     RR_start = time_counter;
                 }
@@ -129,7 +138,9 @@ void rr(Process *p_arr, int N) {
         if (count_child > 1 && (time_counter - RR_start) % TIME_QUANTUM == 0 && (time_counter != RR_start))
         {
             if ( !(is_terminated && p_arr[current_child_idx].pid == exit_pid) ) {
-                current_child_idx = (current_child_idx + 1) % count_child;
+                //current_child_idx = (current_child_idx + 1) % count_child;
+                Process tmp = deQueue(ready_q);
+                enQueue(ready_q, tmp);
             }
         }
          
