@@ -21,21 +21,6 @@ typedef struct {
     pid_t pid;
 } Process;
 
-typedef struct {
-   int current_size;
-   int max_size;
-   Process* container;
-} myHeap;
-
-int myPush(myHeap*, Process*);
-
-int myPop(myHeap*);
-
-int myFront(myHeap*, Process*); 
-
-int myEmpty(myHeap*);
-
-
 void print(Process p);
 
 void unit_time();

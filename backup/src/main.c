@@ -7,9 +7,28 @@
 #include "util.h"
 #include "scheduler.h"
 
+//#define DEBUG 1
+
 #ifndef BUFF_SIZE
 #define BUFF_SIZE 32
 #endif
+
+/* global variable used in rr.c */
+//int is_terminated = 0;
+//int total_child = 0;
+//pid_t exit_pid;
+
+
+
+/*
+void print(Process p) {
+    printf("%s %d %d\n", p.p_name, p.ready_t, p.exec_t);
+}
+
+void unit_time() {
+    volatile unsigned long i;
+    for (i = 0; i < 1000000UL; i++);
+}*/
 
 int main(int argc, char *argv[]) {
     
@@ -22,6 +41,8 @@ int main(int argc, char *argv[]) {
     char schedule_policy[10];
     int N;
 
+
+    //char p_name_buff[BUFF_SIZE];
     int ready_t;
     int exec_t;
 
@@ -31,6 +52,10 @@ int main(int argc, char *argv[]) {
 
     Process p_arr[N];
 
+    #ifdef DEBUG
+    fprintf(stdout, "%s\n", schedule_policy);
+    fprintf(stdout, "%d\n", N);
+    #endif
 
     int i;
     for (i = 0; i < N; ++i) {
@@ -46,7 +71,19 @@ int main(int argc, char *argv[]) {
         //strcpy(p_arr[i].p_name, p_name_buff);
         
         p_arr[i] = tmp_p;
+        #ifdef DEBUG
+        printf("i = %d, p_name = %s, p_name's address: %p\n", 
+                i, p_arr[i].p_name, (p_arr[i].p_name));
+        #endif
     }
+    
+    #ifdef DEBUG
+    printf("checking value\n");
+    for (i = 0; i < N; ++i) {
+        printf("%d ", i);
+        print(p_arr[i]);
+    }
+    #endif   
  
    QsortReady(p_arr, N);
  

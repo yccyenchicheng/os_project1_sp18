@@ -22,7 +22,7 @@
 #define WRITE_END 1
 #define BUFFER_SIZE 25
 
-void psjf(Process* p_arr, int N) {
+void sjf(Process* p_arr, int N) {
    char *tag = "[Project1]";
     
    struct timespec ts_start;
@@ -108,19 +108,19 @@ void psjf(Process* p_arr, int N) {
             }
          }
          else {
-            if(!myEmpty(&heap)) {
-               Process front;
-               assert(myFront(&heap, &front));
-               if(current.exec_t > front.exec_t) {
-                  myPush(&heap, &current);
-                  
-                  myFront(&heap, &current);
+            //if(!myEmpty(&heap)) {
+            //   Process front;
+            //   assert(myFront(&heap, &front));
+            //   if(current.exec_t > front.exec_t) {
+            //      myPush(&heap, &current);
+            //      
+            //      myFront(&heap, &current);
 
-                  myPop(&heap);
-               }               
-            }
-            
-            --(current.exec_t);
+            //      myPop(&heap);
+            //   }               
+            //}
+            //
+            //--(current.exec_t);
             
             assert(sched_setscheduler(current.pid, SCHED_FIFO, &sch_p) != -1);
          }
@@ -131,5 +131,3 @@ void psjf(Process* p_arr, int N) {
       ++t;
    } 
 }
-
-
