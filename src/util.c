@@ -99,20 +99,20 @@ void child_execution(struct sched_param sch_p, Process current_p, struct timespe
 void ToHeap(Process* p,int N){
     if(N==1){
       
-        printf("Build heap:\n");
-        printHeap(p,N);
+//        printf("Build heap:\n");
+//        printHeap(p,N);
         return;
     }
     #ifdef DEBUG
-    printf("Before heapify:\n");
-    printHeap(p,N);
+//    printf("Before heapify:\n");
+//    printHeap(p,N);
     #endif
     for(int i=(N>>1)-1;i>=0;i--){
         MaxHeapify(p,N,i);
     }
     //#ifdef DEBUG
-    printf("After heapify:\n");
-    printHeap(p,N);
+//    printf("After heapify:\n");
+//    printHeap(p,N);
     //#endif
 }
 void MaxHeapify(Process* p,int N,int index){
@@ -165,6 +165,7 @@ void QsortReady(Process* p,int N){ //sort with large to small
     }
 
 }
+
 int Partition(Process* p,int N){
     int pivot_idx = 0;
     for(int i=1;i<N;i++){
@@ -179,12 +180,14 @@ int Partition(Process* p,int N){
     //printf("pivot_idx:%d\n",pivot_idx );
     return pivot_idx;
 }
+
 void swap(Process* p1,Process* p2){
     Process* tmp = (Process*)malloc( sizeof(Process));
     *tmp = *p1;
     *p1 = *p2;
     *p2 = *tmp;
 }
+
 void printHeap(Process* p,int N){
     for(int i=0;i<N;i++){
         print(p[i]);
