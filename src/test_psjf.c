@@ -82,6 +82,7 @@ void psjf(Process* p,int N){
 //	#endif
     //this part is to sort for finding ready process
 
+    pid_t fork_pid; //for the case dont need to create new pid
     total_child = N;
     Process currentP;//Now executing process 
     currentP.pid = -1;
@@ -90,7 +91,7 @@ void psjf(Process* p,int N){
     Process* priority_heap = (Process*)malloc(N* sizeof(Process));
     int priority_heap_size = 0;
     int time_counter = 0;
-    //int exec_time_counter = 0 ; // to count the current child's exec_t 
+    int exec_time_counter = 0 ; // to count the current child's exec_t 
     int ready_index = 0; //check if p[ready_index] ready
     while (total_child > 0){ // main parent loop
         printf("<debug> time counter at parent: %d,exec_time_counter: %d,total_child: %d\n", time_counter,exec_time_counter,total_child);
@@ -122,11 +123,24 @@ void psjf(Process* p,int N){
                 exec_time_counter = 0;
                 currentP = priority_heap[0];
                 syscall(335, &ts_start);
-                currentP.pid = fork();
-                if (currentP.pid == 0){ // child
-                    break;
-                } else if (currentP.pid > 0) { // scheduler
-                    printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
+                if(currentP.ready_t<time_counter){//this currentP already created
+                    fork_pid = fork();
+                    if (fork_pid == 0){ // child
+                        break;
+                    } else if (fork_pid > 0) { // scheduler
+                        printf("child recovered at %d. pid = %d\n",time_counter, currentP.pid);
+                    }else{
+                        printf("fork failed\n");
+                    }
+                }else{ // create new one , actually currentP.ready_t==time_counter
+                    currentP.pid = fork(); // need to execute new preemptive process
+                    if (currentP.pid == 0){ // child
+                        break;
+                    } else if (currentP.pid > 0) { // scheduler
+                        printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
+                    }else{
+                        printf("fork failed\n");
+                    }
                 }
                 swap(&priority_heap[0],&priority_heap[--priority_heap_size]);//the last removed
                 ToHeap(priority_heap,priority_heap_size);//clean but maybe slow QQ
@@ -142,25 +156,36 @@ void psjf(Process* p,int N){
 
             if ((currentP.exec_t-exec_time_counter) > priority_heap[0].exec_t){ //preemptive
                 //some process shorter than remaining part
-                kill(currentP.pid,9); // kill the origin executing child
+                assert(kill(currentP.pid,9)==0); // kill the origin executing child
                 currentP.exec_t -= exec_time_counter; //the remaining time length
                 priority_heap[priority_heap_size++] = currentP; //push the remaining to heap
                 currentP = priority_heap[0]; //extract new currentP
-                swap(&priority_heap[0],&priority_heap[--priority_heap_size]);//swap and the last removed
-                ToHeap(priority_heap,priority_heap_size);
-                exec_time_counter = 0;
                 #ifndef DEBUG
                 syscall(335, &ts_start);
                 #endif
-                currentP.pid = fork(); // need to execute new preemptive process
-                if (currentP.pid == 0){ // child
-                    break;
-                } else if (currentP.pid > 0) { // scheduler
-                    printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
-                }else{
-                    printf("fork failed\n");
-                }
+                if(currentP.ready_t<time_counter){//this currentP already created
+                    fork_pid = fork();
+                    if (fork_pid == 0){ // child
+                        break;
+                    } else if (fork_pid > 0) { // scheduler
+                        printf("child recovered at %d. pid = %d\n",time_counter, currentP.pid);
+                    }else{
+                        printf("fork failed\n");
+                    }
+                }else{ // create new one , actually currentP.ready_t==time_counter
+                    currentP.pid = fork(); // need to execute new preemptive process
+                    if (currentP.pid == 0){ // child
+                        break;
+                    } else if (currentP.pid > 0) { // scheduler
+                        printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
+                    }else{
+                        printf("fork failed\n");
+                    }
+                }   
                 
+                swap(&priority_heap[0],&priority_heap[--priority_heap_size]);//swap and the last removed
+                ToHeap(priority_heap,priority_heap_size);
+                exec_time_counter = 0;
             }
             sch_p.sched_priority = 4;            
             assert(sched_setscheduler(currentP.pid, SCHED_FIFO, &sch_p) != -1); // let the child run

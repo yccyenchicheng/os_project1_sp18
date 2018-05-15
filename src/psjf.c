@@ -38,7 +38,7 @@ void psjf_sighandler(int signum){
         is_terminated = 1;
         exit_pid = wait(NULL);
         //#ifdef DEBUG
-        printf("Child terminated. pid = %d, child left = %d, terminated = %d\n", exit_pid, total_child-1, is_terminated);
+        printf("<SIGCHLD>Child terminated. pid = %d, child left = %d, terminated = %d\n", exit_pid, total_child-1, is_terminated);
         //#endif
     }
 }
