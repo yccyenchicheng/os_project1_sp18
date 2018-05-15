@@ -261,10 +261,10 @@ void SJF_handler(Process* p_arr, int N)
 			InsertSorted(List_e, &head_e, head_r, prior_e);
 			Delete(List_r, &head_r);
 		}
-		while(head_e != -1){
+		if(head_e != -1){
 			//printf("p%d is terminated at %d", head_e, time+prior_e[head_e]-1);
                         printf("%s is terminated at %d\n", p_arr[head_e].name, time + prior_e[head_e]-1);
-			time = time + prior_r[head_e];
+			time = time + prior_e[head_e];
 			Delete(List_e, &head_e);
 		}
 		if(head_e == -1 && head_r != -1 && prior_r[head_r]>time){
