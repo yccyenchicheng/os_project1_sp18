@@ -95,7 +95,7 @@ void sjf(Process* p,int N){
                 if (currentP.pid == 0){ // child
                     break;
                 } else if (currentP.pid > 0) { // scheduler
-                    printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
+                    //printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
                 }
                 swap(&priority_heap[0],&priority_heap[--priority_heap_size]);//the last removed
                 ToHeap(priority_heap,priority_heap_size);//clean but maybe slow QQ
