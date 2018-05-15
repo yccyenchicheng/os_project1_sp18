@@ -18,6 +18,8 @@
 
 #include "util.h"
 
+#define TIME_QUANTUM 500
+
 int is_terminated = 0;
 int total_child = 0;
 pid_t exit_pid;
