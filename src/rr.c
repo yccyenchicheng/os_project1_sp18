@@ -38,9 +38,9 @@ void sighandler(int signum)
         is_terminated = 1;
         exit_pid = wait(NULL);
         
-        //#ifdef DEBUG
+        #ifdef DEBUG
         printf("Child terminated. pid = %d, child left = %d, terminated = %d\n\n", exit_pid, total_child - 1, is_terminated);
-        //#endif
+        #endif
     }
 }
 
@@ -123,9 +123,10 @@ void rr(Process *p_arr, int N) {
                     printf("checking ready_q.   end is: ");
                     print(ready_q->end);
                     #endif
-                    //#ifdef DEBUG
+                    
+                    #ifdef DEBUG
                     printf("%s created at %d. pid = %d. %s is running.\n", p_arr[i].p_name,time_counter, p_arr[i].pid, ready_q->front.p_name);
-                    //#endif
+                    #endif
                 }
 
                 if (count_child == 1) // first child should run
@@ -152,55 +153,26 @@ void rr(Process *p_arr, int N) {
                 //current_child_idx = (current_child_idx + 1) % count_child;
                 Process tmp = deQueue(ready_q);
                 enQueue(ready_q, tmp);
+                #ifdef DEBUG
                 printf("Time: %d, change from %s, %d to %s, %d\n", time_counter, tmp.p_name, tmp.pid, ready_q->front.p_name, ready_q->front.pid);
+                #endif
             }
         }
          
         
         if (is_terminated) {
-            //#ifdef DEBUG
+            #ifdef DEBUG
             printf("pid: %d terminated at time: %d\n", exit_pid, time_counter);
-            //#endif
+            #endif
             is_terminated = 0;
             int idx_removed = -1;
             Process terminated_child = deQueue(ready_q);
-             
-            /* Remove the exit_child_idx from p_arr[] 
-             * by moving every p one index left. */
-            //for (int num = 0; num < total_child; ++num)
-            //{
-            //    if (p_arr[num].pid == exit_pid)
-            //    {
-            //        if (num != total_child - 1) // if num == total_child - 1 => then we just --total_child
-            //        {
-            //            for (int k = num; k < total_child; ++k) 
-            //            {
-            //                p_arr[k] = p_arr[k + 1];
-            //            }
-            //            current_child_idx = num; // should set current_child_idx = num, so the next child can continue to run 
-            //                                     //after some child process finish their execution.
-            //            
-            //            #ifdef DEBUG
-            //            printf("current childs: \n");
-            //            for (int k = 0; k < total_child - 1; ++k) {
-            //                printf("%s, %d; ", p_arr[k].p_name, p_arr[k].pid);
-            //            }
-            //            printf("\n");
-            //            #endif
-            //            
-            //            break;
-            //        } else { // num == total_child - 1
-            //            //if (total_child == 2) {
-            //            //p_arr[0] = p_arr[num];
-            //            current_child_idx = 0; // should set current_child_idx = 0;
-            //        }
-            //    }
-            //}
+            
             --total_child;
             --count_child;
-            //#ifdef DEBUG
-            printf("child %s, pid = %d stops.\n", terminated_child.p_name, terminated_child.pid);
-            //#endif
+            #ifdef DEBUG
+            printf("%s, pid: %d stops. Next: %s, pid: %d\n", terminated_child.p_name, terminated_child.pid, ready_q->front.p_name, ready_q->front.pid);
+            #endif
         }
        
         if (count_child > 0) {
