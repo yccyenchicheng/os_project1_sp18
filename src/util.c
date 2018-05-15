@@ -49,22 +49,17 @@ void child_execution(struct sched_param sch_p, Process current_p, struct timespe
 
     for(int j = 0; j < exec_t - 1; ++j)
     {
-        //printf("child pid: %d, child's time counter: %d\n", cpid, j);
         unit_time();
         sch_p.sched_priority = 2;
 
 
-        //printf("### change to parent ###\n");
         assert(sched_setscheduler(cpid, SCHED_FIFO, &sch_p) != -1); // return control to parent
         ++total_time;
     }
     /* last unit of time */
-    //printf("child pid: %d, child's time counter: %d\n", cpid, total_time);
     unit_time();     
     syscall(335, &ts_end); // for printk
     ++total_time;
-
-    //printf("%s, pid: %d is about to exit!. time: %d\n", current_p.p_name, getpid(), total_time);
 
     /* should print p_name, pid when it finishs the execution */
     printf("%s %d\n", current_p.p_name, cpid);
@@ -86,7 +81,6 @@ void ToHeap(Process* p,int N){
 void MaxHeapify(Process* p,int N,int index){
     int largest = 0;
     int left = (index<<1) + 1, right = (index<<1) + 2;
-    //printf("index:%d,left:%d,right:%d\n",index,left,right);
     if(left<N && largerP(p[left],p[index])){
         largest = left;
     }else{
