@@ -1,0 +1,88 @@
+P1 created at 1200. pid = 4488. P1 is running.
+P2 created at 2400. pid = 4489. P1 is running.
+Time: 2700, change from P1, 4488 to P2, 4489
+Time: 3200, change from P2, 4489 to P1, 4488
+P3 created at 3600. pid = 4490. P1 is running.
+Time: 3700, change from P1, 4488 to P2, 4489
+Time: 4200, change from P2, 4489 to P3, 4490
+Time: 4700, change from P3, 4490 to P1, 4488
+P4 created at 4800. pid = 4491. P1 is running.
+P5 created at 5200. pid = 4492. P1 is running.
+Time: 5200, change from P1, 4488 to P2, 4489
+Time: 5700, change from P2, 4489 to P3, 4490
+P6 created at 5800. pid = 4493. P3 is running.
+Time: 6200, change from P3, 4490 to P4, 4491
+Time: 6700, change from P4, 4491 to P5, 4492
+Time: 7200, change from P5, 4492 to P1, 4488
+Time: 7700, change from P1, 4488 to P2, 4489
+Time: 8200, change from P2, 4489 to P6, 4493
+Time: 8700, change from P6, 4493 to P3, 4490
+Time: 9200, change from P3, 4490 to P4, 4491
+Time: 9700, change from P4, 4491 to P5, 4492
+Time: 10200, change from P5, 4492 to P1, 4488
+Time: 10700, change from P1, 4488 to P2, 4489
+Time: 11200, change from P2, 4489 to P6, 4493
+Time: 11700, change from P6, 4493 to P3, 4490
+Time: 12200, change from P3, 4490 to P4, 4491
+Time: 12700, change from P4, 4491 to P5, 4492
+Time: 13200, change from P5, 4492 to P1, 4488
+Time: 13700, change from P1, 4488 to P2, 4489
+Time: 14200, change from P2, 4489 to P6, 4493
+Time: 14700, change from P6, 4493 to P3, 4490
+Time: 15200, change from P3, 4490 to P4, 4491
+Time: 15700, change from P4, 4491 to P5, 4492
+Time: 16200, change from P5, 4492 to P1, 4488
+Time: 16700, change from P1, 4488 to P2, 4489
+Time: 17200, change from P2, 4489 to P6, 4493
+Time: 17700, change from P6, 4493 to P3, 4490
+P3 4490
+Child terminated. pid = 4490, child left = 5, terminated = 1
+
+pid: 4490 terminated at time: 18200
+child P3, pid = 4490 stops.
+Time: 18700, change from P4, 4491 to P5, 4492
+Time: 19200, change from P5, 4492 to P1, 4488
+P1 4488
+Child terminated. pid = 4488, child left = 4, terminated = 1
+
+pid: 4488 terminated at time: 19700
+child P1, pid = 4488 stops.
+P2 4489
+Child terminated. pid = 4489, child left = 3, terminated = 1
+
+pid: 4489 terminated at time: 20200
+child P2, pid = 4489 stops.
+Time: 20700, change from P6, 4493 to P4, 4491
+Time: 21200, change from P4, 4491 to P5, 4492
+Time: 21700, change from P5, 4492 to P6, 4493
+Time: 22200, change from P6, 4493 to P4, 4491
+Time: 22700, change from P4, 4491 to P5, 4492
+Time: 23200, change from P5, 4492 to P6, 4493
+Time: 23700, change from P6, 4493 to P4, 4491
+Time: 24200, change from P4, 4491 to P5, 4492
+Time: 24700, change from P5, 4492 to P6, 4493
+Time: 25200, change from P6, 4493 to P4, 4491
+Time: 25700, change from P4, 4491 to P5, 4492
+Time: 26200, change from P5, 4492 to P6, 4493
+Time: 26700, change from P6, 4493 to P4, 4491
+Time: 27200, change from P4, 4491 to P5, 4492
+Time: 27700, change from P5, 4492 to P6, 4493
+P6 4493
+Child terminated. pid = 4493, child left = 2, terminated = 1
+
+pid: 4493 terminated at time: 28200
+child P6, pid = 4493 stops.
+Time: 28700, change from P4, 4491 to P5, 4492
+Time: 29200, change from P5, 4492 to P4, 4491
+Time: 29700, change from P4, 4491 to P5, 4492
+P5 4492
+Child terminated. pid = 4492, child left = 1, terminated = 1
+
+pid: 4492 terminated at time: 30200
+child P5, pid = 4492 stops.
+P4 4491
+Child terminated. pid = 4491, child left = 0, terminated = 1
+
+pid: 4491 terminated at time: 31200
+child P4, pid = 4491 stops.
+

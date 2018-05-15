@@ -107,6 +107,7 @@ void ToHeap(Process* p,int N){
     printHeap(p,N);
     //#endif
 }
+
 void MaxHeapify(Process* p,int N,int index){
     int largest = 0;
     int left = (index<<1) + 1, right = (index<<1) + 2;
@@ -177,7 +178,6 @@ void swap(Process* p1,Process* p2){
     *tmp = *p1;
     *p1 = *p2;
     *p2 = *tmp;
-    free(tmp);
 }
 
 void printHeap(Process* p,int N){
@@ -191,7 +191,7 @@ void printHeap(Process* p,int N){
 void enQueue(struct queue *q, Process x)
 {
     // set up front
-    if (q->stack1 == NULL) {
+    if (q->stack1 == NULL && q->stack2 == NULL) {
         q->front = x;
     }
     q->end = x;
@@ -223,7 +223,36 @@ Process deQueue(struct queue *q)
     }
     
     x = pop(&q->stack2);
-    q->front = q->stack2->data;
+    if (q->stack2 != NULL) {
+        q->front = q->stack2->data;
+    } else {
+        if (q->stack1 != NULL) {
+            Process tmp;
+            while(q->stack1 != NULL)
+            {
+                tmp = pop(&q->stack1);
+                push(&q->stack2, tmp);
+                
+            }
+            q->front = tmp;
+        }
+
+    }
+    
+
+    /* setup front. */
+    //if(q->stack2 == NULL)
+    //{
+    //    Process tmp;
+    //    if (q->stack1 != NULL) {
+    //        while(q->stack1 != NULL)
+    //        {
+    //            tmp = pop(&q->stack1);
+    //            push(&q->stack2, tmp);
+    //        }
+    //        q->front = (q->stack2->data);
+    //    }
+    //}
     return x;
 }
 
