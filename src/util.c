@@ -76,9 +76,6 @@ void child_execution(struct sched_param sch_p, Process current_p, struct timespe
 
 void ToHeap(Process* p,int N){
     if(N==1){
-
-        printf("Build heap:\n");
-        printHeap(p,N);
         return;
     }
     for(int i=(N>>1)-1;i>=0;i--){
