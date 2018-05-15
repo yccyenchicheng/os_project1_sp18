@@ -25,7 +25,7 @@
 /* Program to implement a queue using two stacks */
 //extern struct Process
 void print(Process p) {
-    printf("%s %d %d\n", p.p_name, p.ready_t, p.exec_t);
+    printf("%s %d %d %d\n", p.p_name,p.pid, p.ready_t, p.exec_t);
 }
 
 void unit_time() {
