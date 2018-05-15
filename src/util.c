@@ -18,12 +18,7 @@
 
 #include "util.h"
 
-//#define DEBUG 1
-
-//#define PRINT_INTERVAL 100
-
 /* Program to implement a queue using two stacks */
-//extern struct Process
 void print(Process p) {
     printf("%s %d %d %d\n", p.p_name,p.pid, p.ready_t, p.exec_t);
 }
@@ -38,9 +33,6 @@ int str_equal(char* c1,char* c2){
     while(c1[i]==c2[i]){
 
         if(c1[i]=='\0'){
-#ifdef DEBUG
-            printf("shorter strlen = %d\n",i);
-#endif
             return 1;
         }
         i++;
@@ -71,9 +63,6 @@ void child_execution(struct sched_param sch_p, Process current_p, struct timespe
     unit_time();     
     syscall(335, &ts_end); // for printk
     ++total_time;
-#ifdef DEBUG
-    printf("child %d stops!, time passed: %d\n", getpid(), total_time);
-#endif
 
     printf("%s, pid: %d is about to exit!. time: %d\n", current_p.p_name, getpid(), total_time);
 
@@ -82,9 +71,6 @@ void child_execution(struct sched_param sch_p, Process current_p, struct timespe
     /* for dmesg */
     syscall(334, tag, cpid, &ts_start, &ts_end); // for dmesg
 
-#ifdef DEBUG
-    printf("%s %d %lu.%09lu %lu.%09lu\n", tag, cpid, ts_start.tv_sec, ts_start.tv_nsec, ts_end.tv_sec, ts_end.tv_nsec); // just to check if this is correct
-#endif
     _exit(0);
 }
 
@@ -95,17 +81,9 @@ void ToHeap(Process* p,int N){
         printHeap(p,N);
         return;
     }
-#ifdef DEBUG
-    printf("Before heapify:\n");
-    printHeap(p,N);
-#endif
     for(int i=(N>>1)-1;i>=0;i--){
         MaxHeapify(p,N,i);
     }
-    //#ifdef DEBUG
-//    printf("After heapify:\n");
-//    printHeap(p,N);
-    //#endif
 }
 
 void MaxHeapify(Process* p,int N,int index){
@@ -128,9 +106,6 @@ void MaxHeapify(Process* p,int N,int index){
 }
 
 int largerP(Process p1,Process p2){ //return true if priority p1 > p2 (SJF)
-    // printf("Comparing...\n");
-    // print(p1);
-    // print(p2);
     if(p1.exec_t<p2.exec_t||(p1.exec_t==p2.exec_t&&p1.ready_t<p2.ready_t)){
         return 1;
     }else{
@@ -165,12 +140,10 @@ int Partition(Process* p,int N){
         if(earlierP(p[i],p[pivot_idx])){ //p[i] > p[pivot_idx]
             for(int j=i;j>pivot_idx;j--){
                 swap(&p[j],&p[j-1]);
-                //printf("Swap\n");
             }
             pivot_idx++;
         }
     }
-    //printf("pivot_idx:%d\n",pivot_idx );
     return pivot_idx;
 }
 
@@ -223,6 +196,7 @@ Process deQueue(struct queue *q)
         }
     }
     
+    /* setup front. */
     x = pop(&q->stack2);
     if (q->stack2 != NULL) {
         q->front = q->stack2->data;
@@ -239,21 +213,7 @@ Process deQueue(struct queue *q)
         }
 
     }
-    
 
-    /* setup front. */
-    //if(q->stack2 == NULL)
-    //{
-    //    Process tmp;
-    //    if (q->stack1 != NULL) {
-    //        while(q->stack1 != NULL)
-    //        {
-    //            tmp = pop(&q->stack1);
-    //            push(&q->stack2, tmp);
-    //        }
-    //        q->front = (q->stack2->data);
-    //    }
-    //}
     return x;
 }
 
