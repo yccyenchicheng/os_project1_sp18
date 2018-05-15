@@ -16,16 +16,7 @@
 #include <time.h>
 #include <sys/syscall.h>
 
-
 #include "util.h"
-
-#ifndef TIME_QUANTUM
-#define TIME_QUANTUM 500
-#endif 
-
-#ifndef PRINT_INTERVAL 
-#define PRINT_INTERVAL 100
-#endif 
 
 int is_terminated = 0;
 int total_child = 0;

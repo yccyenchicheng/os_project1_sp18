@@ -46,14 +46,8 @@ void fifo(Process* p_arr, int N) {
    int t, r, status;   t = 0;   r = 0;
    pid_t pid;   pid = getpid();
    while((rbegin != rend) || (wbegin != wend)) {
-      #ifdef DEBUG
-      printf("t = %d: ", t);   fflush(stdout);
-      #endif
       if(wbegin != wend) {
          while(wbegin->ready_t == t) {
-            #ifdef DEBUG
-            printf("%s ready... ", wbegin->p_name);   fflush(stdout); 
-            #endif
 
             syscall(335, &ts_start);
 
@@ -66,9 +60,6 @@ void fifo(Process* p_arr, int N) {
                sch_p.sched_priority = 2;
                for(int i = 0; i < wbegin->exec_t-1; ++i) {
                   unit_time();
-                  #ifdef DEBUG
-                  printf("\n   %s run... \n", wbegin->p_name);   fflush(stdout);
-                  #endif
                   assert(sched_setscheduler(cpid, SCHED_FIFO, &sch_p) != -1);
                }       
                unit_time();  
@@ -88,12 +79,7 @@ void fifo(Process* p_arr, int N) {
          }
       } 
 
-      // scheduler schedules processes from rbegin to rend
-      // TODO insert heap here    
-
-
       if((r == 0) && (rbegin != rend)) {
-         // TODO extract min
          assert(sched_setscheduler(rbegin->pid, SCHED_FIFO, &sch_p) != -1);
          ++r;
       } 
@@ -102,15 +88,11 @@ void fifo(Process* p_arr, int N) {
             ++rbegin; 
             --r; 
             if(rbegin != rend) {
-               // TODO extract min
                assert(sched_setscheduler(rbegin->pid, SCHED_FIFO, &sch_p) != -1);
                ++r;
             }
             else {
                unit_time();
-               #ifdef DEBUG
-               printf("\n   S idle...\n");   fflush(stdout);
-               #endif
             }
          }
          else {
@@ -119,13 +101,7 @@ void fifo(Process* p_arr, int N) {
       }      
       else {
          unit_time();
-         #ifdef DEBUG
-         printf("\n   S idle...\n");   fflush(stdout);
-         #endif
       }       
-      #ifdef DEBUG
-      printf("\n");
-      #endif
       ++t;
    } 
 }
