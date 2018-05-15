@@ -4,127 +4,117 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include "util.h"
-#include <signal.h>
-#include <wait.h>
-#include <assert.h>
-//#include "sjf.h"
+#include <sys/wait.h>
+
 #include "scheduler.h"
-/* for system call */
+#include "util.h"
+
+#include <assert.h>
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+
 #include <time.h>
 #include <sys/syscall.h>
 
-static int is_terminated = 0;
-static pid_t exit_pid;
-static int total_child = 0;
+#define READ_END 0
+#define WRITE_END 1
+#define BUFFER_SIZE 25
 
-
-void sjf_sighandler(int signum){
-    if (signum == SIGCHLD){
-        is_terminated = 1;
-        exit_pid = wait(NULL);
-    }
-}
-
-void sjf(Process* p,int N){
+void sjf(Process* p_arr, int N) {
+   char *tag = "[Project1]";
     
-    char *tag = "[Project1]";
-    struct timespec ts_start;
-    struct timespec ts_end;
+   struct timespec ts_start;
+   struct timespec ts_end;
 
-    struct sigaction sa;
-    sa.sa_handler = sjf_sighandler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    assert(sigaction(SIGCHLD, &sa, NULL) != -1);
-    // this part is to handle death of child process 
+   Process *rbegin, *rend, *wbegin, *wend;
+   Process current;
+   rbegin = rend = wbegin = &p_arr[0];
+   wend   = (&p_arr[N]);
 
-    struct sched_param sch_p;
-    pid_t scheduler_pid = getpid();
-    
-    
-    sch_p.sched_priority = 3;
-    assert(sched_setscheduler(scheduler_pid, SCHED_FIFO, &sch_p) != -1); 
+   struct sched_param sch_p; 
+   sch_p.sched_priority = 3;    
+   assert(sched_setscheduler(getpid(), SCHED_FIFO, &sch_p) != -1);
+   sch_p.sched_priority = 4;   
+   
+   int t, r, total, status;   t = 0;   r = 0;   total = N;
 
+   // initialize heap
+   Process h[N]; 
+   myHeap heap; 
+   heap.current_size = 0;
+   heap.max_size = N;
+   heap.container = h;
 
-    QsortReady(p,N);//sort ready_t from small to large
-    
+   pid_t pid;   pid = getpid();
+   while(total > 0) {
+         while((wbegin != wend) && (wbegin->ready_t == t)) {
+            syscall(335, &ts_start);
 
-    total_child = N;
-    Process currentP;//Now executing process 
-    currentP.pid = -1;
-    currentP.ready_t = -1;
-    currentP.exec_t = -1; // smaller then zero when before the "currentP = first process" so that won't fork child
-    Process* priority_heap = (Process*)malloc(N* sizeof(Process));
-    int priority_heap_size = 0;
-    int time_counter = 0;
-    
-    int ready_index = 0; //check if p[ready_index] ready
-    while (total_child > 0){ // main parent loop
-    	//check counter if some other process ready,add to priority_heap, if ready_index=0 fork and run immediately
-    	//while check whether p[ready_index] ready
-    	while(ready_index<N && p[ready_index].ready_t==time_counter){
-                   
-            
-            priority_heap[priority_heap_size++] = p[ready_index];	//add this process to priority_heap
-            ToHeap(priority_heap,priority_heap_size);//clean but maybe slow QQ
-
-
-
-            ready_index++;
-    	}
-    	//reset exec_time_counter=0
-        if (p[0].ready_t == time_counter){
-            is_terminated = 1;
-            total_child++; //before the first process start, no need to --total_child in line 143, so need to print N there in first time
-        }
-
-
-    	if(is_terminated){//if execution time end, print counter
-            
-            is_terminated = 0;
-            
-            if(priority_heap_size>0){//if no process running or ready, idle
-
-                currentP = priority_heap[0];
-                syscall(335, &ts_start);
-                currentP.pid = fork();
-                if (currentP.pid == 0){ // child
-                    break;
-                } else if (currentP.pid > 0) { // scheduler
-                    //printf("child created at %d. pid = %d\n",time_counter, currentP.pid);
-                }
-                swap(&priority_heap[0],&priority_heap[--priority_heap_size]);//the last removed
-                ToHeap(priority_heap,priority_heap_size);//clean but maybe slow QQ
-                
-                sch_p.sched_priority = 4;
-                assert(sched_setscheduler(currentP.pid, SCHED_FIFO, &sch_p) != -1); // let the child run
+            pid = fork();   wbegin->pid = pid;
+            if(pid < 0) {
+               perror("fork() failed...\n");
             }
-    		
-    	}else if (p[0].ready_t <= time_counter) { //some child executing
-            sch_p.sched_priority = 4;            
-            assert(sched_setscheduler(currentP.pid, SCHED_FIFO, &sch_p) != -1); // let the child run
-        }else if (p[0].ready_t > time_counter){ // time i should pass 1 unit if there is no child now
-           unit_time(); 
-        }
-    	
-        
-    	time_counter++;
-    }
+            else if(pid == 0) {
+               pid_t cpid = getpid();
+               sch_p.sched_priority = 2;
+               for(int i = 0; i < wbegin->exec_t-1; ++i) {
+                  unit_time();
+                  assert(sched_setscheduler(cpid, SCHED_FIFO, &sch_p) != -1);
+               }       
+               unit_time();  
+              
+               syscall(335, &ts_end);
+               syscall(334, tag, getpid(), &ts_start, &ts_end);
+ 
+               printf("%s %d\n", wbegin->p_name, getpid());   fflush(stdout);
+               exit(0);
+            }
+            else {
+               assert(myPush(&heap, wbegin));
 
+               ++wbegin;
+               ++rend;
+            } 
+         } 
 
+      if((r == 0) && (!myEmpty(&heap))) {      
+         assert(myFront(&heap, &current));
 
-    //child-only part
-    if (currentP.pid == 0){ 
-        child_execution(sch_p, currentP, ts_start, ts_end);
-    	//child_execution(sch_p,currentP);
-    }
+         assert(myPop(&heap)); 
+  
+         assert(sched_setscheduler(current.pid, SCHED_FIFO, &sch_p) != -1);
 
-    free(priority_heap);
+         ++r;
+      } 
+      else if(r == 1) {
+         if(waitpid(current.pid, &status, WNOHANG) != 0) {
+            ++rbegin; 
+            --r; 
+            --total; 
+            
+            if(!myEmpty(&heap)) {           
+               assert(myFront(&heap, &current));
 
+               assert(myPop(&heap)); 
+ 
+               assert(sched_setscheduler(current.pid, SCHED_FIFO, &sch_p) != -1);
 
+               ++r;
+            }
+            else {
+               unit_time();
+            }
+         }
+         else {
+            
+            assert(sched_setscheduler(current.pid, SCHED_FIFO, &sch_p) != -1);
+         }
+      }      
+      else {
+         unit_time();
+      }       
+      ++t;
+   } 
 }
-

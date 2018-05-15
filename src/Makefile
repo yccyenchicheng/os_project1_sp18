@@ -1,4 +1,4 @@
-main: main.o fifo.o rr.o sjf_2.o psjf.o util.o
+main: main.o fifo.o rr.o sjf.o psjf.o util.o
 	gcc -o $@ $^
 
 main.o: main.c
@@ -10,8 +10,8 @@ fifo.o: fifo.c
 rr.o: rr.c
 	gcc -c rr.c
 
-sjf_2.o: sjf_2.c
-	gcc -c sjf_2.c
+sjf.o: sjf.c
+	gcc -c sjf.c
 
 psjf.o: psjf.c
 	gcc -c psjf.c
