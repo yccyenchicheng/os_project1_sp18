@@ -164,7 +164,7 @@ void FIFO_handler(Process* p_arr, int N)
 	while(head_r != -1 || head_e != -1){
 		while(head_r != -1 && prior_r[head_r]<=time){
 			//printf("p%d is ready at %d\n", head_r, time);
-			printf("%s is ready at %d\n", p_arr[head_r].name, time);
+			printf("%s is ready at %d\n", p_arr[head_r].name, p_arr[head_r].ready_t);
 			InsertSorted(List_e,&head_e, head_r, prior_r);
 			Delete(List_r, &head_r);
 		}
@@ -203,7 +203,7 @@ void RR_handler(Process* p_arr, int N)
 	{
 		while(head_r != -1 && prior_r[head_r]<=time){
 			//printf("p%d ready at %d\n",head_r,time);
-			printf("%s is ready at %d\n", p_arr[head_r].name, time);
+			printf("%s is ready at %d\n", p_arr[head_r].name, p_arr[head_r].ready_t);
 			InsertBack(List_e, &head_e, head_r);
 			Delete(List_r, &head_r);
 		}
@@ -221,7 +221,7 @@ void RR_handler(Process* p_arr, int N)
 				int temp = head_e;
 				while(head_r != -1 && prior_r[head_r]<=time){
 					//printf("p%d is ready at %d\n", head_r, time);
-                                        printf("%s is ready at %d\n", p_arr[head_r].name, time);
+                                        printf("%s is ready at %d\n", p_arr[head_r].name, p_arr[head_r].ready_t);
 					InsertBack(List_e, &head_e, head_r);
 					Delete(List_r, &head_r);
 				}
@@ -257,14 +257,14 @@ void SJF_handler(Process* p_arr, int N)
 	while(head_r != -1 || head_e != -1){
 		while(head_r != -1 && prior_r[head_r]<=time){
 		//	printf("p%d is ready at %d", head_r, time);
-			printf("%s is ready at %d\n", p_arr[head_r].name, time);
+			printf("%s is ready at %d\n", p_arr[head_r].name, p_arr[head_r].ready_t);
 			InsertSorted(List_e, &head_e, head_r, prior_e);
 			Delete(List_r, &head_r);
 		}
-		while(head_e != -1){
+		if(head_e != -1){
 			//printf("p%d is terminated at %d", head_e, time+prior_e[head_e]-1);
                         printf("%s is terminated at %d\n", p_arr[head_e].name, time + prior_e[head_e]-1);
-			time = time + prior_r[head_e];
+			time = time + prior_e[head_e];
 			Delete(List_e, &head_e);
 		}
 		if(head_e == -1 && head_r != -1 && prior_r[head_r]>time){
@@ -296,7 +296,7 @@ void PSJF_handler(Process* p_arr, int N)
 	while(head_r != -1 || head_e != -1){
 		while(head_r != -1 && prior_r[head_r] <= time){
 		//	printf("p%d is ready at %d\n", head_r, time);
-			printf("%s is ready at %d\n", p_arr[head_r].name, time);
+			printf("%s is ready at %d\n", p_arr[head_r].name, p_arr[head_r].ready_t);
 			InsertSorted(List_e, &head_e, head_r, prior_e);
 			printf("	");
 			PrintList(List_e, head_e);
