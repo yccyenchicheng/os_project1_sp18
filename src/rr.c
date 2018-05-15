@@ -100,7 +100,7 @@ void rr(Process *p_arr, int N) {
         }
         #endif
 
-        for (int i = 0; i < total_child; ++i) // iterate through process to see
+        for (int i = 0; i < N; ++i) // iterate through process to see
         {
             if (time_counter == p_arr[i].ready_t)
             {
