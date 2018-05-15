@@ -91,16 +91,6 @@ void child_execution(struct sched_param sch_p, Process current_p, struct timespe
 void ToHeap(Process* p,int N){
     if(N==1){
 
-      
-//        printf("Build heap:\n");
-//        printHeap(p,N);
-        return;
-    }
-    #ifdef DEBUG
-//    printf("Before heapify:\n");
-//    printHeap(p,N);
-    #endif
-
         printf("Build heap:\n");
         printHeap(p,N);
         return;
