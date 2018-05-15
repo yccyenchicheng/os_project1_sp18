@@ -177,6 +177,7 @@ void swap(Process* p1,Process* p2){
     *tmp = *p1;
     *p1 = *p2;
     *p2 = *tmp;
+    free(tmp);
 }
 
 void printHeap(Process* p,int N){
