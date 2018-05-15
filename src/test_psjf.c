@@ -116,7 +116,7 @@ void psjf(Process* p,int N){
             
             is_terminated = 0;
             //#ifdef DEBUG
-            printf("time counter at parent: %d, currentP.exec_t: %d, total_child: %d\n", time_counter,currentP.exec_t,--total_child);
+            printf("<terminate>time counter at parent: %d, currentP.exec_t: %d, total_child: %d\n", time_counter,currentP.exec_t,--total_child);
             //#endif
             if(priority_heap_size>0){//if no process running or ready, idle
 
@@ -144,10 +144,8 @@ void psjf(Process* p,int N){
                 }
                 swap(&priority_heap[0],&priority_heap[--priority_heap_size]);//the last removed
                 ToHeap(priority_heap,priority_heap_size);//clean but maybe slow QQ
-                
-                #ifdef DEBUG
-                printf("<New child>set child pid: %d's priority to 4\n",currentP.pid);
-                #endif
+                printf("Change control to: ");
+                print(currentP);
                 sch_p.sched_priority = 4;
                 assert(sched_setscheduler(currentP.pid, SCHED_FIFO, &sch_p) != -1); // let the child run
             }
@@ -186,7 +184,10 @@ void psjf(Process* p,int N){
                 swap(&priority_heap[0],&priority_heap[--priority_heap_size]);//swap and the last removed
                 ToHeap(priority_heap,priority_heap_size);
                 exec_time_counter = 0;
+                printf("Preemptive!\n");
             }
+            printf("Change control to: ");
+            print(currentP);
             sch_p.sched_priority = 4;            
             assert(sched_setscheduler(currentP.pid, SCHED_FIFO, &sch_p) != -1); // let the child run
 
