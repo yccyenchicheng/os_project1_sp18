@@ -94,7 +94,7 @@ void psjf(Process* p,int N){
     int exec_time_counter = 0 ; // to count the current child's exec_t 
     int ready_index = 0; //check if p[ready_index] ready
     while (total_child > 0){ // main parent loop
-        printf("<debug> time counter at parent: %d,exec_time_counter: %d,total_child: %d\n", time_counter,exec_time_counter,total_child);
+        printf("<debug> time counter at parent: %d,exec_time_counter: %d,total_child: %d,is_terminated: %d\n", time_counter,exec_time_counter,total_child,is_terminated);
     	//check counter if some other process ready,add to priority_heap, if ready_index=0 fork and run immediately
     	//while check whether p[ready_index] ready
     	while(ready_index<N && p[ready_index].ready_t==time_counter){
